@@ -1,0 +1,20 @@
+{
+  "index": {
+    "title": "Getting Started"
+  },
+  "builtins": {
+    "title": "Builtins"
+  },
+  "modules": {
+    "title": "Modules"
+  },
+  "types": {
+    "title": "Types"
+  },
+  "how_it_works": {
+    "title": "How it Works"
+  },
+  "use_cases": {
+    "title": "Use Cases"
+  }
+}

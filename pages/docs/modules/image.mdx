@@ -1,0 +1,32 @@
+# image
+
+## Functions
+
+### decode
+
+```go filename="Function signature"
+decode(b byte_slice / byte_buffer / io.Reader) image
+```
+
+Returns an image object that is decoded from the given bytes found in b. The image
+must be in a supported format: `png`, `jpg`, or `bmp`.
+
+```go copy filename="Example"
+>>> image.decode(open("/path/to/test.png"))
+image(width=256, height=256)
+```
+
+### encode
+
+```go filename="Function signature"
+encode(i image, format string) byte_slice
+```
+
+Encodes the given image object into the given format, returning the encoded bytes.
+
+```go copy filename="Example"
+>>> img
+image(width=256, height=256)
+>>> image.encode(img, "png")
+byte_slice(...)
+```

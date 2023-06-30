@@ -1,0 +1,31 @@
+## Hello World
+
+The `print` builtin function is equivalent to `fmt.Println` in Go:
+
+```go copy
+print("Hello world!")
+```
+
+```text filename="Output:"
+Hello world!
+```
+
+It can of course print any number of arguments:
+
+```go copy
+print("sum:", 2+2, "product:", 2*2)
+```
+
+```text filename="Output:"
+sum: 4 product: 4
+```
+
+`printf` is also available and it wraps `fmt.Printf` in Go:
+
+```go copy
+printf("name: %s, age: %d\n", "Alice", 30)
+```
+
+```text filename="Output:"
+name: Alice, age: 30
+```

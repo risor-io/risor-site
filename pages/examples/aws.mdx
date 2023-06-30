@@ -1,0 +1,70 @@
+## AWS Examples
+
+The AWS SDK v2 is built into Risor. Clients for many of the AWS services are
+included by default.
+
+### List S3 Buckets
+
+```go copy
+aws.client("s3").list_buckets()
+```
+
+### Describe Availability Zones
+
+```go copy
+aws.client("ec2").describe_availability_zones()
+```
+
+### Invoke a Lambda Function
+
+```go copy
+client := aws.client('lambda', {region: 'us-west-1'})
+client.invoke({FunctionName: 'risor'})['Payload'] | decode('base64') | json.unmarshal
+```
+
+### List Secrets
+
+```go copy
+aws.client("secretsmanager").list_secrets()
+```
+
+### List API methods for any Service
+
+```go copy
+aws.client("secretsmanager").__api_methods__
+```
+
+Output:
+
+```json
+[
+  "delete_resource_policy",
+  "list_secrets",
+  "replicate_secret_to_regions",
+  "restore_secret",
+  "update_secret",
+  "validate_resource_policy",
+  "create_secret",
+  "get_secret_value",
+  "list_secret_version_ids",
+  "put_resource_policy",
+  "rotate_secret",
+  "tag_resource",
+  "untag_resource",
+  "update_secret_version_stage",
+  "describe_secret",
+  "delete_secret",
+  "get_random_password",
+  "get_resource_policy",
+  "put_secret_value",
+  "cancel_rotate_secret",
+  "stop_replication_to_replica",
+  "remove_regions_from_replication"
+]
+```
+
+### Get Client Region
+
+```go copy
+aws.client("s3").__region__
+```

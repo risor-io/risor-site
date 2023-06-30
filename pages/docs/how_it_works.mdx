@@ -1,0 +1,26 @@
+# How It Works
+
+Risor follows standard patterns for implementing a scripting language. This
+includes parsing source code into an Abstract Syntax Tree (AST), compiling the
+AST into bytecode, and then executing the bytecode on a lightweight virtual
+machine.
+
+The excellent book [Writing an Interpreter in Go](https://interpreterbook.com/)
+was the original inspiration for the project.
+
+## The Internals
+
+Risor includes the following internal components:
+
+- A [lexer](https://github.com/risor-io/risor/tree/main/lexer) which takes
+  source code as input and produces a stream of tokens as output.
+- A [parser](https://github.com/risor-io/risor/tree/main/parser) which takes
+  tokens as an input and produces an abstract syntax tree (AST).
+- A [compiler](https://github.com/risor-io/risor/tree/main/compiler) which
+  compiles the AST into Risor bytecode instructions.
+- A [virtual machine](https://github.com/risor-io/risor/tree/main/vm) which
+  executes the program bytecode.
+- [Built-in types](https://github.com/risor-io/risor/tree/main/object)
+  available to all programs.
+- [Built-in functions](https://github.com/risor-io/risor/blob/main/builtins/builtins.go)
+  that are accesible by default.

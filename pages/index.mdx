@@ -1,0 +1,79 @@
+---
+title: Risor
+---
+
+import { Callout } from 'nextra-theme-docs';
+import Features from '../components/features';
+import CloudIcon from '../components/icons/cloud';
+
+{
+
+<div>
+  <h1 className='text-center text-4xl tracking-tighter font-extrabold md:text-5xl mt-8 mb-8'>
+    Risor
+  </h1>
+  <div className='mx-auto max-w-full w-[880px] text-center px-4 mb-10'>
+    <p className='text-lg mb-8 text-gray-500 md:!text-2xl'>
+      Fast and flexible scripting for Go developers and DevOps.
+    </p>
+    <Features />
+  </div>
+</div>
+
+}
+
+Risor offers a new way to write scripts, integrate systems, and interact with the cloud.
+Enjoy a modern and familiar language with a huge amount of built-in functionality for interacting with databases, HTTP, and more.
+
+You might want to check out the [builtins](/docs/builtins) list or examples of
+[AWS SDK usage](/examples/aws) and [querying Postgres](/examples/pgx).
+
+## Quick Example
+
+```go copy
+array := ["gophers", "are", "burrowing", "rodents"]
+
+sentence := array | strings.join(" ") | strings.to_upper
+
+print(sentence)
+```
+
+Output:
+
+```filename="output"
+GOPHERS ARE BURROWING RODENTS
+```
+
+## Why Choose Risor?
+
+Risor may be a great fit for your project if any of this is valuable to you:
+
+- General purpose: Work with JSON, HTTP, database connections, and more.
+- Fast: The fastest pure-Go scripting language (as of June 2023)
+- Familiar: Friendly syntax for Go and Python developers.
+- Expressive: Easily express lists, maps, sets and transformations on them.
+- Pipe expressions: Quickly create processing pipelines.
+- Single binary: The Risor binary includes built-in libraries and packages.
+
+## Editor
+
+Try running Risor from your browser! The code is evaluated in a cloud region _close to you_.
+Note that the final value in the script is what is shown below. **Stdout is not
+yet shown**. If you want to know the value of a variable, just add the variable
+name as the last line of the script.
+
+import Editor from '../components/editor';
+
+<Editor />
+
+## Community [#community]
+
+<p className='flex h-6 mt-4 gap-2'>
+  <img alt='stars' src='https://img.shields.io/github/stars/risor-io/risor' />
+  <img
+    alt='license'
+    src='https://img.shields.io/github/license/risor-io/risor'
+  />
+</p>
+
+Feel free to join the [discussions on GitHub](https://github.com/risor-io/risor/discussions)!
