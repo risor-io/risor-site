@@ -10,7 +10,7 @@ export default async function handler(req: NextRequest) {
   return new Response(
     JSON.stringify({
       name: process.env.NEXT_RUNTIME,
-      check: 'curtis',
+      check: 'curtis-bar',
     }),
     {
       status: 200,
