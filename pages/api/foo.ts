@@ -1,5 +1,3 @@
-// ./pages/api/some_route.ts
-
 import type { NextRequest } from 'next/server';
 
 export const config = {
