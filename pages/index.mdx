@@ -10,74 +10,48 @@ import { Bleed } from 'nextra-theme-docs';
 }
 {<h1 className="text-center text-4xl tracking-tighter font-extrabold md:text-5xl mt-8">Risor</h1>}
 
-The name “SWR” is derived from `stale-while-revalidate`, a HTTP cache invalidation strategy popularized by [HTTP RFC 5861](https://tools.ietf.org/html/rfc5861).
-SWR is a strategy to first return the data from cache (stale), then send the fetch request (revalidate), and finally come with the up-to-date data.
+A fast and flexible embedded scripting language for Go projects. Risor compiles scripts to bytecode internally which it then runs on a lightweight Virtual Machine (VM). Risor is written in pure Go.
 
-<Callout emoji='✅'>
-  With SWR, components will get a stream of data updates{' '}
-  <strong>constantly</strong> and <strong>automatically</strong>.<br />
-  And the UI will be always <strong>fast</strong> and <strong>reactive</strong>.
-</Callout>
+Risor modules integrate the Go standard library, making it easy to write scripts using functions that you're already familiar with as a Go developer.
 
 <div className='mt-16 mb-20 text-center'>
   [Get Started](/docs/getting-started) · [Examples](/examples/basic) ·
-  [Blog](/blog) · [GitHub Repository](https://github.com/vercel/swr)
+  [Blog](/blog) · [GitHub Repository](https://github.com/risor-io/risor)
 </div>
 
 ## Overview [#overview]
 
-```jsx
-import useSWR from 'swr';
+```go
+array := ["gophers", "are", "burrowing", "rodents"]
 
-function Profile() {
-  const { data, error, isLoading } = useSWR('/api/user', fetcher);
+sentence := array | strings.join(" ") | strings.to_upper
 
-  if (error) return <div>failed to load</div>;
-  if (isLoading) return <div>loading...</div>;
-  return <div>hello {data.name}!</div>;
-}
+print(sentence)
 ```
 
-In this example, the `useSWR` hook accepts a `key` string and a `fetcher` function. `key` is a unique identifier of the data (normally the API URL)
-and will be passed to `fetcher`. `fetcher` can be any asynchronous function which returns the data, you can use the native fetch or tools like Axios.
+Output:
 
-The hook returns 3 values: `data`, `isLoading` and `error`, based on the status of the request.
+```
+GOPHERS ARE BURROWING RODENTS
+```
 
-## Features [#features]
+## Why Choose Risor?
 
-With just one single line of code, you can simplify the logic of data fetching in your project, and also have all these amazing features out-of-the-box:
+Risor may be a great fit for your project if any of this is valuable to you:
 
-- **Fast**, **lightweight** and **reusable** data fetching
-- Built-in **cache** and request deduplication
-- **Real-time** experience
-- Transport and protocol agnostic
-- SSR / ISR / SSG support
-- TypeScript ready
-- React Native
-
-SWR has you covered in all aspects of speed, correctness, and stability to help you build better experiences:
-
-- Fast page navigation
-- Polling on interval
-- Data dependency
-- Revalidation on focus
-- Revalidation on network recovery
-- Local mutation (Optimistic UI)
-- Smart error retry
-- Pagination and scroll position recovery
-- React Suspense
-
-And a lot [more](/docs/getting-started).
+- General purpose: Work with JSON, HTTP, database connections, and more.
+- Fast: The fastest pure-Go scripting language (as of June 2023)
+- Familiar: Friendly syntax for Go and Python developers.
+- Expressive: Easily express lists, maps, sets and transformations on them.
+- Pipe expressions: Quickly create processing pipelines.
+- Customizable: Add your own types and built-in functions.
+- Single binary: The Risor binary includes built-in libraries and packages.
 
 ## Community [#community]
 
 <p className='flex h-6 mt-4 gap-2'>
   <img alt='stars' src='https://badgen.net/github/stars/risor-io/risor' />
-  <img alt='downloads' src='https://badgen.net/npm/dt/swr' />
   <img alt='license' src='https://badgen.net/npm/license/swr' />
 </p>
 
-Risor is created by the same team behind [Next.js](https://nextjs.org), the React framework.
-Follow [@vercel](https://twitter.com/vercel) on Twitter for future project updates.
-
-Feel free to join the [discussions on GitHub](https://github.com/vercel/swr/discussions)!
+Feel free to join the [discussions on GitHub](https://github.com/risor-io/risor/discussions)!
