@@ -2,8 +2,10 @@
 
 import { useState } from 'react';
 import styles from './counters.module.css';
+import { useSession } from 'next-auth/react';
 
 function MyButton() {
+  const { data: session, status } = useSession();
   const [count, setCount] = useState(0);
 
   function handleClick() {
@@ -13,7 +15,7 @@ function MyButton() {
   return (
     <div>
       <button onClick={handleClick} className={styles.counter}>
-        Clicked {count} times
+        Clicked {count} times {JSON.stringify(session)}
       </button>
     </div>
   );
