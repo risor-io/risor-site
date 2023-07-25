@@ -239,17 +239,19 @@ export default function App() {
   }
 
   return (
-    <Editor
-      height='45vh'
-      defaultLanguage='mySpecialLanguage'
-      defaultValue={defaultCode}
-      beforeMount={handleEditorWillMount}
-      onMount={handleEditorDidMount}
-      theme='myCoolTheme'
-      options={{
-        readOnly: false,
-        minimap: { enabled: false },
-      }}
-    />
+    <div style={{ marginTop: 25 }}>
+      <Editor
+        height='14vh'
+        defaultLanguage='mySpecialLanguage'
+        defaultValue={defaultCode}
+        beforeMount={handleEditorWillMount}
+        onMount={handleEditorDidMount}
+        theme='myCoolTheme'
+        options={{
+          readOnly: false,
+          minimap: { enabled: false },
+        }}
+      />
+    </div>
   );
 }

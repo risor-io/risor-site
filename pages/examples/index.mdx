@@ -1,7 +1,41 @@
-# Welcome to Risor
+# Risor Examples
 
-Hello, world!
+Here are some examples of how to use Risor. _This is a work in progress._
 
-## Section
+## Install Risor Using Homebrew
 
-Some content.
+```bash
+brew tap risor-io/risor
+brew install risor
+risor version
+```
+
+## Start the REPL
+
+Running `risor` with no options starts the REPL:
+
+```bash
+risor
+```
+
+## Evaluate a Code Snippet
+
+Use the `-c` option to pass in code as a command line option:
+
+```bash
+risor -c "time.now()"
+```
+
+## Evaluate a Script
+
+Pass the path to a Risor script as an argument:
+
+```bash
+risor hello.risor
+```
+
+In _hello.risor_:
+
+```go
+print("hello")
+```

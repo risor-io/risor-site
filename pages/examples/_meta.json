@@ -3,16 +3,6 @@
     "title": "Overview",
     "theme": {}
   },
-  "example2": "Example 2",
-  "example1": {
-    "title": "W00t",
-    "theme": {
-      "toc": false,
-      "sidebar": false,
-      "footer": true,
-      "breadcrumb": true,
-      "pagination": false,
-      "layout": "full"
-    }
-  }
+  "hello_world": "Hello World",
+  "print_map": "Print a Map"
 }
