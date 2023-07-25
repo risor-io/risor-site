@@ -1,13 +1,16 @@
 ### Printing the Contents of a Map
 
+Maps always have string keys in Risor. It is optional to surround keys in
+quotes when declaring a map literal.
+
 ```go
-d := {
+m := {
     one: 1,
     two: 2,
     three: 3,
 }
 
-for k, v := range d {
+for k, v := range m {
     print("k:", k, "v:", v)
 }
 ```
