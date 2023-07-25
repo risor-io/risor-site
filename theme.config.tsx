@@ -1,6 +1,6 @@
 import React from 'react';
 import { DocsThemeConfig } from 'nextra-theme-docs';
-import LoginButton from './components/login-button';
+import EditLink from './components/edit-link';
 // import mainLogo from './public/logo.png';
 import Image from 'next/image';
 
@@ -31,7 +31,7 @@ const config: DocsThemeConfig = {
     content: null,
   },
   editLink: {
-    component: undefined,
+    component: EditLink,
   },
   primaryHue: {
     light: 198,

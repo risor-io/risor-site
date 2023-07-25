@@ -72,6 +72,12 @@ const operators = [
   '/=',
 ];
 
+const defaultCode = `array := ["gophers", "are", "burrowing", "rodents"]
+ 
+sentence := array | strings.join(" ") | strings.to_upper
+ 
+print(sentence)`;
+
 function getLang() {
   return {
     keywords,
@@ -169,19 +175,18 @@ export default function App() {
     monaco.languages.setMonarchTokensProvider('mySpecialLanguage', getLang());
 
     // Define a new theme that contains only rules that match this language
-    // monaco.editor.defineTheme('myCoolTheme', {
-    //   base: 'vs',
-    //   inherit: false,
-    //   rules: [
-    //     { token: 'custom-info', foreground: '808080' },
-    //     { token: 'custom-error', foreground: 'ff0000', fontStyle: 'bold' },
-    //     { token: 'custom-notice', foreground: 'FFA500' },
-    //     { token: 'custom-date', foreground: '008800' },
-    //   ],
-    //   colors: {
-    //     'editor.foreground': '#000000',
-    //   },
-    // });
+    monaco.editor.defineTheme('myCoolTheme', {
+      base: 'vs-dark',
+      inherit: true,
+      rules: [
+        // { token: 'string', foreground: '808080', fontStyle: 'bold' },
+        { token: 'custom-error', foreground: 'ff0000', fontStyle: 'bold' },
+      ],
+      colors: {
+        // 'editor.foreground': '#000000',
+        // 'editor.background': '#aaaaaa',
+      },
+    });
 
     // Register a completion item provider for the new language
     monaco.languages.registerCompletionItemProvider('mySpecialLanguage', {
@@ -237,10 +242,10 @@ export default function App() {
     <Editor
       height='45vh'
       defaultLanguage='mySpecialLanguage'
-      defaultValue='if (true) { "hello" }'
+      defaultValue={defaultCode}
       beforeMount={handleEditorWillMount}
       onMount={handleEditorDidMount}
-      //   theme='myCoolTheme'
+      theme='myCoolTheme'
       options={{
         readOnly: false,
         minimap: { enabled: false },

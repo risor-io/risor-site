@@ -16,6 +16,16 @@ html {
   filter: invert(1) brightness(1.8);
 }
 
+.dark\:nx-bg-dark {
+  background-color: rgba(15, 23, 42) !important;
+}
+
+.nextra-toc .nextra-scrollbar div {
+  background-color: rgba(15, 23, 42) !important;
+  box-shadow: 0 0 #0000;
+  border-top-width: 0px;
+}
+
 .bg-blue {
   background-color: rgba(15, 23, 42);
 }
