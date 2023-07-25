@@ -16,28 +16,6 @@ html {
   filter: invert(1) brightness(1.8);
 }
 
-.dark\:nx-bg-dark {
-  background-color: rgba(15, 23, 42) !important;
-}
-
-.nextra-toc .nextra-scrollbar div {
-  background-color: rgba(15, 23, 42) !important;
-  box-shadow: 0 0 #0000;
-  border-top-width: 0px;
-}
-
-.bg-blue {
-  background-color: rgba(15, 23, 42);
-}
-
-.nextra-nav-container div.nextra-nav-container-blur {
-  background-color: rgba(15, 23, 42) !important;
-}
-
-footer {
-  background-color: rgb(10, 18, 35) !important;
-}
-
 .nextra-search {
   margin-left: 0.7em;
   margin-right: 0.7em;
@@ -48,7 +26,6 @@ nav > a > span {
   padding-right: 0.7em;
 }
 
-/* 
 body {
   background: linear-gradient(
       to bottom,
@@ -63,4 +40,4 @@ body {
   background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, #111 300px),
     fixed 0 0 / 20px 20px radial-gradient(#313131 1px, transparent 0),
     fixed 10px 10px / 20px 20px radial-gradient(#313131 1px, transparent 0);
-} */
+}
