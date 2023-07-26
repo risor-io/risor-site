@@ -1,4 +1,5 @@
 import React from 'react';
+import { useRouter } from 'next/router';
 import { DocsThemeConfig } from 'nextra-theme-docs';
 import EditLink from './components/edit-link';
 // import mainLogo from './public/logo.png';
@@ -11,6 +12,14 @@ const config: DocsThemeConfig = {
   },
   chat: {},
   docsRepositoryBase: 'https://github.com/shuding/nextra-docs-template',
+  useNextSeoProps() {
+    const { asPath } = useRouter();
+    if (asPath !== '/') {
+      return {
+        titleTemplate: '%s - Risor',
+      };
+    }
+  },
   footer: {
     text: 'Risor',
     // component: undefined,
