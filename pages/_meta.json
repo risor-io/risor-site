@@ -4,6 +4,10 @@
     "type": "page",
     "display": "hidden"
   },
+  "docs": {
+    "title": "Docs",
+    "type": "page"
+  },
   "examples": {
     "title": "Examples",
     "type": "page"
