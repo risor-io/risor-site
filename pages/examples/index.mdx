@@ -4,7 +4,7 @@ Here are some examples of how to use Risor. _This is a work in progress._
 
 ## Install Risor Using Homebrew
 
-```bash
+```bash copy
 brew tap risor-io/risor
 brew install risor
 risor version
@@ -14,7 +14,7 @@ risor version
 
 Running `risor` with no options starts the REPL:
 
-```bash
+```bash copy
 risor
 ```
 
@@ -22,7 +22,7 @@ risor
 
 Use the `-c` option to pass in code as a command line option:
 
-```bash
+```bash copy
 risor -c "time.now()"
 ```
 
@@ -30,12 +30,12 @@ risor -c "time.now()"
 
 Pass the path to a Risor script as an argument:
 
-```bash
+```bash copy
 risor hello.risor
 ```
 
 In _hello.risor_:
 
-```go
+```go copy
 print("hello")
 ```

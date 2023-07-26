@@ -5,19 +5,19 @@ included by default.
 
 ### List S3 Buckets
 
-```go
+```go copy
 aws.client("s3").list_buckets()
 ```
 
 ### Describe Availability Zones
 
-```go
+```go copy
 aws.client("ec2").describe_availability_zones()
 ```
 
 ### Invoke a Lambda Function
 
-```go
+```go copy
 client := aws.client('lambda', {region: 'us-west-1'})
 client.invoke({FunctionName: 'risor'})['Payload'] | decode('base64') | json.unmarshal
 ```
