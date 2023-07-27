@@ -1,5 +1,7 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Editor from '@monaco-editor/react';
+import { Button, Textarea } from '@mantine/core';
+import axios from 'axios';
 
 const keywords = [
   'break',
@@ -76,7 +78,7 @@ const defaultCode = `array := ["gophers", "are", "burrowing", "rodents"]
  
 sentence := array | strings.join(" ") | strings.to_upper
  
-print(sentence)`;
+sentence`;
 
 function getLang() {
   return {
@@ -160,7 +162,8 @@ function getLang() {
 }
 
 export default function App() {
-  const monacoRef = useRef(null);
+  const editorRef = useRef(null);
+  const [result, setResult] = useState(null);
 
   function handleEditorWillMount(monaco) {
     // Register a new language
@@ -235,23 +238,46 @@ export default function App() {
   }
 
   function handleEditorDidMount(editor, monaco) {
-    monacoRef.current = monaco;
+    editorRef.current = editor;
+  }
+
+  function handleOnChange(value, event) {}
+
+  async function runCode() {
+    const value = editorRef.current.getValue();
+    const res = await axios.get(
+      `https://risor.curtis7927.workers.dev?code=${encodeURIComponent(value)}`
+    );
+    setResult(JSON.stringify(res.data));
   }
 
   return (
-    <div style={{ marginTop: 25 }}>
+    <div
+      style={{
+        marginTop: 25,
+      }}
+    >
       <Editor
         height='14vh'
         defaultLanguage='mySpecialLanguage'
         defaultValue={defaultCode}
         beforeMount={handleEditorWillMount}
         onMount={handleEditorDidMount}
+        onChange={handleOnChange}
         theme='myCoolTheme'
         options={{
           readOnly: false,
           minimap: { enabled: false },
         }}
       />
+      <Button
+        variant='outline'
+        sx={{ marginTop: 20, marginBottom: 20 }}
+        onClick={() => runCode()}
+      >
+        Run
+      </Button>
+      {result != null ? <Textarea value={result}></Textarea> : null}
     </div>
   );
 }

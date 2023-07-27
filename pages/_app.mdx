@@ -1,12 +1,25 @@
 import '../styles.css';
+import { MantineProvider } from '@mantine/core';
 
 export default function Nextra({
   Component,
   pageProps: { session, ...pageProps },
 }) {
   return (
-    <div className='bg-blue'>
+    <MantineProvider
+      withGlobalStyles
+      withNormalizeCSS
+      theme={{
+        colorScheme: 'dark',
+        globalStyles: (theme) => ({
+          button: {
+            backgroundColor: 'unset !important',
+            backgroundImage: 'unset !important',
+          },
+        }),
+      }}
+    >
       <Component {...pageProps} />
-    </div>
+    </MantineProvider>
   );
 }
