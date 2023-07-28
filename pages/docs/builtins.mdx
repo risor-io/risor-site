@@ -1,0 +1,507 @@
+import { Callout } from 'nextra/components';
+
+# Built-in Functions
+
+Risor includes this set of default built-in functions. The set of available
+built-ins is easily customizable, depending on the goals for your project.
+
+### all(container)
+
+Returns `true` if all entries in the given container are "truthy".
+
+```go
+>>> all([true, 1, "ok"])
+true
+>>> all([true, 0, "ok"])
+false
+```
+
+### any(container)
+
+Returns `true` if any of the entries in the given container are "truthy".
+
+```go
+>>> any([false, 0, "ok"])
+true
+>>> any([false, 0, ""])
+false
+```
+
+### assert(object, message)
+
+Generates an error if `x` is "falsy". If a message is provided, it is used as
+the assertion error message.
+
+```go
+>>> assert(1 == 1)                 // no effect
+>>> assert(1 == 1, "check failed") // no effect
+>>> assert(1 == 2, "check failed") // raises error
+check failed
+>>> assert(1 == 2)                 // raises error
+assertion failed
+```
+
+### bool(object)
+
+Returns `true` or `false` depending on whether the object is considered "truthy".
+Container types including lists, maps, sets, and strings evaluate to `false` when
+empty and `true` otherwise.
+
+```go
+>>> bool(1)
+true
+>>> bool(0)
+false
+>>> bool([1])
+true
+>>> bool([])
+false
+```
+
+### buffer(object)
+
+Returns a Buffer object that wraps a Go `bytes.Buffer`.
+
+```go
+>>> buffer(5)
+buffer("\x00\x00\x00\x00\x00")
+>>> buffer(byte_slice([65, 66, 67]))
+buffer("ABC")
+>>> string(buffer(byte_slice([65, 66, 67])))
+"ABC"
+```
+
+<Callout>
+  The Buffer type interoperates easily with Strings and ByteSlices. The Buffer
+  object's Go type implements [io.ReadWriter](https://pkg.go.dev/io#ReadWriter)
+  which means it can interoperate with with any Go function that accepts an
+  `io.Reader` or `io.Writer`.
+</Callout>
+
+### byte_slice(object)
+
+Creates a new slice of bytes, which wraps the Go type `[]byte`. If a single
+argument is provided, it is used as the initial capacity of the slice. If a
+list of values is provided, the slice is initialized with those values.
+
+```go
+>>> byte_slice()
+byte_slice("")
+>>> byte_slice(5)
+byte_slice("\x00\x00\x00\x00\x00")
+>>> byte_slice([1, 2, 3])
+byte_slice("\x01\x02\x03")
+>>> byte_slice([65, 66, 67])
+byte_slice("ABC")
+>>> byte_slice([65]) + byte_slice([66, 67])
+byte_slice("ABC")
+>>> string(byte_slice([65, 66, 67]))
+"ABC"
+```
+
+### byte(object)
+
+Returns a Byte object that wraps a Go `byte`. The Byte type interoperates
+seamlessly with Ints and Floats.
+
+```go
+>>> byte()
+0
+>>> byte(3)
+3
+>>> byte("3")
+3
+>>> byte(3) == 3
+true
+>>> byte(3) + 5.5
+8.5
+```
+
+### call(function, ...any)
+
+Calls the function with given arguments. This is primarily useful in pipe
+expressions when a function is being passed through the pipe as a variable.
+
+```go
+>>> func inc(x) { x + 1 }
+>>> call(inc, 99)
+100
+>>> inc | call(41)
+42
+```
+
+### chr(int)
+
+Converts an Int to the corresponding unicode rune, which is returned as a String.
+The `ord` built-in performs the inverse transformation.
+
+```go
+>>> chr(8364)
+"€"
+>>> chr(97)
+"a"
+```
+
+### decode(object, codec_name)
+
+Decodes the given object using the specified codec. The codec_name is a string
+that may be one of the following values:
+
+- `base64`
+- `base32`
+- `hex`
+- `json`
+- `csv`
+- `urlquery`
+
+```go
+>>> decode("616263", "hex")
+byte_slice("abc")
+>>> decode("YWJj", "base64")
+byte_slice("abc")
+>>> decode("a,b,c\n", "csv")
+[["a", "b", "c"]]
+```
+
+_See additional notes about codecs in the [encode](#encode) section below._
+
+### delete(map, key)
+
+Deletes the item with the specified key from the map. This operation has no
+effect if the key is not present in the map.
+
+```go
+>>> m := {one: 1, two: 2}
+{"one": 1, "two": 2}
+>>> delete(m, "one")
+{"two": 2}
+>>> delete(m, "foo")
+{"two": 2}
+```
+
+### encode(object, codec_name) [#encode]
+
+Encodes the given object using the specified codec. The codec_name is a string
+that may be one of the following values:
+
+- `base64`
+- `base32`
+- `hex`
+- `json`
+- `csv`
+- `urlquery`
+
+```go
+>>> encode("abc", "hex")
+"616263"
+>>> encode("abc", "base64")
+"YWJj"
+>>> encode([["a", "b", "c"]], "csv")
+"a,b,c\n"
+```
+
+`base64`, `base32`, and `hex` codecs operate on byte slices or types that can be
+automatically converted to a byte slice, such as strings. Other codecs may accept
+different types.
+
+<Callout>
+  Additional codecs may be registered by calling the Go function
+  `builtins.RegisterCodec`
+</Callout>
+
+### error(message)
+
+Raises an Error containing the given message. A [try](#try) call can be used to
+catch the error and handle it. Otherwise, the call stack unwinds and error
+stops execution of the program.
+
+```go
+>>> error("kaboom")
+kaboom
+```
+
+### float_slice(object)
+
+Creates a new slice of floating point values, which wraps the Go type `[]float64`.
+If a single argument is provided, it is used as the initial capacity of the slice.
+If a list of values is provided, the slice is initialized with those values.
+
+```go
+>>> float_slice()
+float_slice([])
+>>> float_slice(5)
+float_slice([0 0 0 0 0])
+>>> float_slice([1.1, 2.2, 3.3])
+float_slice([1.1 2.2 3.3])
+>>> float_slice([1.1, 2.2, 3.3])[0]
+1.1
+```
+
+### float(object)
+
+Converts a String or Int object to a Float. An error is generated if the
+operation fails.
+
+```go
+>>> float()
+0
+>>> float("4.4")
+4.4
+```
+
+### getattr(object, name, default)
+
+Returns the named attribute from the object, or the default value if the
+attribute does not exist. The returned attribute is always a Risor object,
+which may be a function. This is similar to
+[getattr](https://docs.python.org/3/library/functions.html#getattr) in Python.
+
+```go
+>>> l := [1,2,3]
+[1, 2, 3]
+>>> append := getattr(l, "append")
+builtin(list.append)
+>>> append(4)
+[1, 2, 3, 4]
+>>> getattr(l, "unknown", "that doesn't exist")
+"that doesn't exist"
+```
+
+### int(object)
+
+Converts a String or Float to an Int. An error is generated if the operation
+fails.
+
+```go
+>>> int(4.4)
+4
+>>> int("123")
+123
+```
+
+### iter(container)
+
+Returns an iterator for the given container object. This can be used to iterate
+through items in a for loop or interacted with more directly. The returned
+iterator has `next()` and `entry()` methods which are used to move forward and
+to retrieve the current entry, respectively.
+
+```go
+>>> s := {"a", "b", "c"}
+>>> iterator := iter(s)
+>>> iterator.next()
+"a"
+>>> iterator.next()
+"b"
+>>> iterator.entry()
+iter_entry("b", true)
+>>> iterator.entry().key
+"b"
+>>> iterator.entry().value
+true
+```
+
+### keys(container)
+
+Returns a list of all keys for items in the given map or list container.
+
+```go
+>>> m := {one: 1, two: 2}
+{"one": 1, "two": 2}
+>>> keys(m)
+["one", "two"]
+```
+
+### len(container)
+
+Returns the size of the given container. Container types include:
+
+- `String`
+- `List`
+- `Map`
+- `Set`
+- `FloatSlice`
+- `ByteSlice`
+
+```go
+>>> len("ab")        // string length
+2
+>>> len([1,2,3])     // list length
+3
+>>> len({foo:"bar"}) // map length
+1
+>>> len({1,2,3,4})   // set length
+4
+```
+
+<Callout>
+  Note that for String types, the length is the _number of underlying runes_ in
+  the string, not the number of bytes. This is subtly different than taking the
+  `len(s)` of a string in Go, which returns the number of bytes. Conceptually,
+  the approach Risor takes is that a String is a container for runes.
+</Callout>
+
+### list(container)
+
+Returns a new list populated with items from the given container. If a list is
+provided, a shallow copy of the list is returned. It is also commonly used to
+convert a set to a list.
+
+```go
+>>> s := {"a", "b", "c"}
+{"a", "b", "c"}
+>>> list(s)
+["a", "b", "c"]
+```
+
+### map(container)
+
+Returns a new map which is populated with the items from the given container
+if one is provided. This behaves similarly to `dict` in Python.
+
+```go
+>>> map()
+{}
+>>> map([["k1", 1], ["k2", 2]])
+{"k1": 1, "k2": 2}
+>>> map({"a", "b", "c"}) // converts a set to a map
+{"a": true, "b": true, "c": true}
+```
+
+### ord(string)
+
+Converts a unicode character to the corresponding Int value. The `chr` built-in
+performs the inverse transformation. An error is generated if a multi-rune string is
+provided.
+
+```go
+>>> ord("€")
+8364
+>>> ord("a")
+97
+>>> chr(ord("€"))
+"€"
+```
+
+### print(...any)
+
+Prints the provided objects to stdout after converting them to their String
+representations. Spaces are inserted between each object and a trailing newline
+is output. This is a wrapper around `fmt.Println` in Go.
+
+```go
+>>> print(42, "is the answer")
+42 is the answer
+```
+
+### printf(string, ...any)
+
+Printf wraps `fmt.Printf` in order to print the formatted string and arguments
+to stdout. In the Risor REPL you will currently not see the `printf` output
+unless the string ends in a newline character.
+
+```go
+>>> printf("name: %s age: %d\n", "joe", 32)
+name: joe age: 32
+```
+
+### reversed(list)
+
+Returns a new list which is a reversed copy of the provided list.
+
+```go
+>>> l := ["a", "b", "c"]
+["a", "b", "c"]
+>>> reversed(l)
+["c", "b", "a"]
+>>> l
+["a", "b", "c"]
+```
+
+### set(container)
+
+Returns a new set containing the items from the given container object.
+
+```go
+>>> set("aabbcc")
+{"a", "b", "c"}
+>>> set([4,4,5])
+{4, 5}
+>>> set({one:1, two:2})
+{"one", "two"}
+```
+
+### sorted(container)
+
+Returns a sorted list of items from the given container object.
+
+```go
+>>> sorted("cba")
+["a", "b", "c"]
+>>> sorted([10, 3, -5])
+[-5, 3, 10]
+```
+
+### sprintf(string, ...any)
+
+Wraps `fmt.Sprintf` to format the string with the provided arguments. Risor
+objects are converted to their corresponding Go types before being passed to
+`fmt.Sprintf`.
+
+```go
+>>> sprintf("name: %s age: %d", "fred", 18)
+"name: fred age: 18"
+>>> sprintf("%v", [1, "a", 3.3])
+"[1 a 3.3]"
+```
+
+### string(object)
+
+Returns a string representation of the given Risor object.
+
+```go
+>>> string({one:1, two:2})
+"{\"one\": 1, \"two\": 2}"
+>>> string(4.4)
+"4.4"
+>>> string([1,2,3])
+"[1, 2, 3]"
+```
+
+### try(...any) [#try]
+
+Accepts one or more functions which are executed in order until one of them
+doesn't raise an error and returns that functions return value. If any
+non-callable object is reached in the provided arguments, that object is
+returned immediately. Otherwise, if all functions raise errors, `nil` is returned.
+
+```go
+>>> func kaboom() { error("kaboom!") }
+>>> try(kaboom)                                      // returns nil
+>>> try(kaboom, func() { error("this failed too") }) // returns nil
+>>> try(kaboom, "fallback")                          // returns "fallback"
+"fallback"
+>>> try(42)
+42
+>>> try(func() { 42 })
+42
+```
+
+### type(object)
+
+Returns the type name of the given object as a String.
+
+```go
+>>> type(1)
+"int"
+>>> type(2.2)
+"float"
+>>> type("hi")
+"string"
+>>> type([])
+"list"
+>>> type({})
+"map"
+>>> type({1,2,3})
+"set"
+```
