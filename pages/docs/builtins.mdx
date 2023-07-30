@@ -130,6 +130,35 @@ expressions when a function is being passed through the pipe as a variable.
 42
 ```
 
+### cat(string)
+
+Similar to the `cat` command in Unix, this function concatenates the contents
+of the given file paths and returns the result as a string.
+
+Assuming the following file exists:
+
+```text filename=names.txt
+alice
+blake
+```
+
+```go
+>>> cat("names.txt")
+byte_slice("alice\blake\n")
+>>> string(cat("names.txt"))
+"alice\nblake\n"
+```
+
+### cd(string)
+
+Changes the current working directory to the given path.
+
+```go
+>>> cd("/tmp")
+>>> os.getwd()
+"/tmp"
+```
+
 ### chr(int)
 
 Converts an Int to the corresponding unicode rune, which is returned as a String.
@@ -140,6 +169,15 @@ The `ord` built-in performs the inverse transformation.
 "€"
 >>> chr(97)
 "a"
+```
+
+### cp(string, string)
+
+Copies the contents of the source file (the first path) to the destination file
+(the second path). If the destination file already exists, it is overwritten.
+
+```go
+>>> cp("foo.txt", "bar.txt")
 ```
 
 ### decode(object, codec_name)
@@ -353,6 +391,19 @@ convert a set to a list.
 {"a", "b", "c"}
 >>> list(s)
 ["a", "b", "c"]
+```
+
+### ls(string)
+
+Lists the contents of the specified directory. If a directory is not provided,
+the current working directory is used. The returned list contains one `DirEntry`
+object for each file or directory in the specified directory.
+
+```go
+>>> ls()
+[dir_entry(name=file1.txt, type=regular), dir_entry(name=logs, type=dir)]
+>>> ls("logs")
+[dir_entry(name=logs.txt, type=regular)]
 ```
 
 ### map(container)
