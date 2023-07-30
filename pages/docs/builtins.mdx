@@ -338,7 +338,8 @@ Returns the size of the given container. Container types include:
   Note that for String types, the length is the _number of underlying runes_ in
   the string, not the number of bytes. This is subtly different than taking the
   `len(s)` of a string in Go, which returns the number of bytes. Conceptually,
-  the approach Risor takes is that a String is a container for runes.
+  the approach Risor takes is that a String is a container for
+  [runes](https://go.dev/blog/strings).
 </Callout>
 
 ### list(container)

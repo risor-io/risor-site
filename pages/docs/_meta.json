@@ -2,6 +2,9 @@
   "index": {
     "title": "Overview"
   },
+  "cli": {
+    "title": "CLI"
+  },
   "types": {
     "title": "Data types"
   },

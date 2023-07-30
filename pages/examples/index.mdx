@@ -1,41 +1,12 @@
+import { Cards, Card } from 'nextra/components';
+// import { CardsIcon, OneIcon, WarningIcon } from '../../icons';
+
 # Risor Examples
 
-Here are some examples of how to use Risor. _This is a work in progress._
+Here are some examples of how to use Risor.
 
-## Install Risor Using Homebrew
-
-```bash copy
-brew tap risor-io/risor
-brew install risor
-risor version
-```
-
-## Start the REPL
-
-Running `risor` with no options starts the REPL:
-
-```bash copy
-risor
-```
-
-## Evaluate a Code Snippet
-
-Use the `-c` option to pass in code as a command line option:
-
-```bash copy
-risor -c "time.now()"
-```
-
-## Evaluate a Script
-
-Pass the path to a Risor script as an argument:
-
-```bash copy
-risor hello.risor
-```
-
-In _hello.risor_:
-
-```go copy filename="hello.risor"
-print("hello")
-```
+- [Hello World](/examples/hello_world)
+- [Print a map](/examples/print_map)
+- [AWS SDK](/examples/aws)
+- [PostgreSQL](/examples/pgx)
+- [HTTP request](/examples/fetch)
