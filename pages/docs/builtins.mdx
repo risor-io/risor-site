@@ -130,26 +130,24 @@ expressions when a function is being passed through the pipe as a variable.
 42
 ```
 
-### cat(string)
+### cat(path, ...paths)
 
 Similar to the `cat` command in Unix, this function concatenates the contents
-of the given file paths and returns the result as a string.
+of the given file path(s) and returns the result as a string.
 
 Assuming the following file exists:
 
-```text filename=names.txt
+```text filename="names.txt"
 alice
 blake
 ```
 
 ```go
 >>> cat("names.txt")
-byte_slice("alice\blake\n")
->>> string(cat("names.txt"))
 "alice\nblake\n"
 ```
 
-### cd(string)
+### cd(path)
 
 Changes the current working directory to the given path.
 
@@ -171,10 +169,10 @@ The `ord` built-in performs the inverse transformation.
 "a"
 ```
 
-### cp(string, string)
+### cp(src_path, dst_path)
 
-Copies the contents of the source file (the first path) to the destination file
-(the second path). If the destination file already exists, it is overwritten.
+Copies the contents of the source file to the destination file. If the
+destination file already exists, it is overwritten.
 
 ```go
 >>> cp("foo.txt", "bar.txt")
@@ -287,7 +285,7 @@ operation fails.
 4.4
 ```
 
-### getattr(object, name, default)
+### getattr(object, name, default=nil)
 
 Returns the named attribute from the object, or the default value if the
 attribute does not exist. The returned attribute is always a Risor object,
@@ -393,7 +391,7 @@ convert a set to a list.
 ["a", "b", "c"]
 ```
 
-### ls(string)
+### ls(path=".")
 
 Lists the contents of the specified directory. If a directory is not provided,
 the current working directory is used. The returned list contains one `DirEntry`
