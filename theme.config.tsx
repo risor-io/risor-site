@@ -39,6 +39,9 @@ const config: DocsThemeConfig = {
   feedback: {
     content: null,
   },
+  nextThemes: {
+    defaultTheme: 'dark',
+  },
   editLink: {
     component: EditLink,
   },

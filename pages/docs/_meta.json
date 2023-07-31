@@ -2,8 +2,8 @@
   "index": {
     "title": "Overview"
   },
-  "cli": {
-    "title": "CLI"
+  "getting_started": {
+    "title": "Getting Started"
   },
   "builtins": {
     "title": "Builtins"
