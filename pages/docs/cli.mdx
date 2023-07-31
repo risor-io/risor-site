@@ -1,12 +1,31 @@
-import { Callout } from 'nextra/components';
+import { Callout, Tabs, Tab } from 'nextra/components';
 
-## Install Risor Using Homebrew
+## Install the CLI
+
+<Tabs items={['Using Homebrew', 'Using Go']}>
+  <Tab>
+    ```bash copy
+    brew tap risor-io/risor
+    brew install risor
+    risor version
+    ```
+  </Tab>
+  <Tab>
+```bash copy
+go install github.com/risor-io/risor/cmd/risor@VERSION
+```
+
+For example:
 
 ```bash copy
-brew tap risor-io/risor
-brew install risor
-risor version
+go install github.com/risor-io/risor/cmd/risor@v0.8.0
 ```
+
+The list of release versions is available [on Github](https://github.com/risor-io/risor/releases).
+
+    </Tab>
+
+</Tabs>
 
 ## Start the REPL
 
@@ -15,6 +34,8 @@ Running `risor` with no options starts the REPL:
 ```bash copy
 risor
 ```
+
+Press `ctrl+c` to exit the REPL.
 
 ## Evaluate a Code Snippet
 
@@ -49,4 +70,43 @@ func add(x, y) { x + y }
 
 ```bash copy
 risor --modules mylibraries -c "import lib; lib.add(1, 2)"
+```
+
+## Pass Code via Stdin
+
+Use the `--stdin` option to pass code via stdin:
+
+```bash copy
+echo "time.now()" | risor --stdin
+```
+
+## Show Timing Information
+
+Use the `--timing` option to print the execution time after the script completes:
+
+```bash copy
+risor --timing --code "time.sleep(2)"
+```
+
+## Set the Output Format
+
+The Risor CLI prints the result of the last expression run in the script. By
+default, it attempts to print the result as JSON, but if the value is not
+JSON-serializable, it will print the result as a string. This behavior may be
+overriden using the `--output` option, which accepts `json` or `text` as values.
+
+```bash copy
+risor -c "'Greetings!'" --output text
+```
+
+```bash copy
+risor -c "'Greetings!'" --output json
+```
+
+## Disable Color Output
+
+Use the `--no-color` option to disable color output:
+
+```bash copy
+risor -c "time.now()" --no-color
 ```

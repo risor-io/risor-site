@@ -46,6 +46,10 @@ const config: DocsThemeConfig = {
     light: 198,
     dark: 198,
   },
+  sidebar: {
+    autoCollapse: true,
+    defaultMenuCollapseLevel: 1,
+  },
 };
 
 export default config;

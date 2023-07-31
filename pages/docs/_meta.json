@@ -5,13 +5,13 @@
   "cli": {
     "title": "CLI"
   },
-  "types": {
-    "title": "Data types"
-  },
   "builtins": {
     "title": "Builtins"
   },
+  "types": {
+    "title": "Types"
+  },
   "how_it_works": {
-    "title": "How it works"
+    "title": "How it Works"
   }
 }
