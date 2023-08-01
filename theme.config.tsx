@@ -53,6 +53,16 @@ const config: DocsThemeConfig = {
     autoCollapse: true,
     defaultMenuCollapseLevel: 1,
   },
+  head: (
+    <>
+      <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+      <meta property='og:title' content='Risor' />
+      <meta
+        property='og:description'
+        content='A fast and flexible scripting language for Go developers and DevOps.'
+      />
+    </>
+  ),
 };
 
 export default config;
