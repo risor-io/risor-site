@@ -3,18 +3,29 @@ title: Risor
 ---
 
 import { Callout } from 'nextra-theme-docs';
-import { Bleed } from 'nextra-theme-docs';
+import Features from '../components/features';
+import CloudIcon from '../components/icons/cloud';
 
 {
-// wrapped with {} to mark it as javascript so mdx will not put it under a p tag
+
+<div>
+  <h1 className='text-center text-4xl tracking-tighter font-extrabold md:text-5xl mt-8 mb-8'>
+    Risor
+  </h1>
+  <div className='mx-auto max-w-full w-[880px] text-center px-4 mb-10'>
+    <p className='text-lg mb-8 text-gray-500 md:!text-2xl'>
+      Fast and flexible scripting for Go developers and DevOps.
+    </p>
+    <Features />
+  </div>
+</div>
+
 }
-{<h1 className="text-center text-4xl tracking-tighter font-extrabold md:text-5xl mt-8">Risor</h1>}
 
-A fast and flexible embedded scripting language for Go projects. Risor compiles scripts to bytecode internally which it then runs on a lightweight Virtual Machine (VM). Risor is written in pure Go.
+Risor offers a new way to write scripts, integrate systems, and interact with the cloud.
+Enjoy a modern and familiar language with a huge amount of built-in functionality for interacting with databases, HTTP, and more.
 
-Risor modules integrate the Go standard library, making it easy to write scripts using functions that you're already familiar with as a Go developer.
-
-## Overview [#overview]
+## Example
 
 ```go copy
 array := ["gophers", "are", "burrowing", "rodents"]
