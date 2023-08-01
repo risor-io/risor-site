@@ -63,7 +63,7 @@ const config: DocsThemeConfig = {
       <meta property='og:title' content='Risor' />
       <meta
         property='og:description'
-        content='A fast and flexible scripting language for Go developers and DevOps.'
+        content='Fast and flexible scripting for Go developers and DevOps.'
       />
     </>
   ),
