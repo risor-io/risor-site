@@ -14,7 +14,7 @@ const config: DocsThemeConfig = {
   docsRepositoryBase: 'https://github.com/shuding/nextra-docs-template',
   useNextSeoProps() {
     const { asPath } = useRouter();
-    if (asPath !== '/') {
+    if (asPath !== '/' && asPath !== '') {
       return {
         titleTemplate: '%s - Risor',
       };
