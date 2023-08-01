@@ -18,6 +18,10 @@ const config: DocsThemeConfig = {
       return {
         titleTemplate: '%s - Risor',
       };
+    } else {
+      return {
+        titleTemplate: 'Risor',
+      };
     }
   },
   footer: {
