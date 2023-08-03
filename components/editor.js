@@ -74,11 +74,21 @@ const operators = [
   '/=',
 ];
 
-const defaultCode = `array := ["gophers", "are", "burrowing", "rodents"]
- 
-sentence := array | strings.join(" ") | strings.to_upper
- 
-sentence`;
+const defaultCode = `
+// Returns a list of stargazers for a Github repository
+func get_stargazers(owner="golang", repo="go") {
+    url := 'https://api.github.com/repos/{owner}/{repo}/stargazers'
+    return fetch(url, {
+        headers: {
+            "Accept": "application/vnd.github+json",
+            "X-GitHub-Api-Version": "2022-11-28",
+        },
+    }).json()
+}
+
+// The result value of the script is the first stargazer
+get_stargazers()[0]
+`;
 
 function getLang() {
   return {
@@ -258,7 +268,7 @@ export default function App() {
       }}
     >
       <Editor
-        height='14vh'
+        height='38vh'
         defaultLanguage='mySpecialLanguage'
         defaultValue={defaultCode}
         beforeMount={handleEditorWillMount}
@@ -277,7 +287,7 @@ export default function App() {
       >
         Run
       </Button>
-      {result != null ? <Textarea value={result}></Textarea> : null}
+      {result != null ? <Textarea autosize value={result}></Textarea> : null}
     </div>
   );
 }
