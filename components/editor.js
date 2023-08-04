@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import Editor from '@monaco-editor/react';
 import { Button, Textarea } from '@mantine/core';
+import { useLocalStorage } from '@mantine/hooks';
 import axios from 'axios';
 
 const keywords = [
@@ -171,9 +172,21 @@ function getLang() {
   };
 }
 
+function genHexString(len) {
+  let output = '';
+  for (let i = 0; i < len; ++i) {
+    output += Math.floor(Math.random() * 16).toString(16);
+  }
+  return output;
+}
+
 export default function App() {
   const editorRef = useRef(null);
   const [result, setResult] = useState(null);
+  const [token, setToken] = useLocalStorage({
+    key: 'risor-token',
+    defaultValue: '0',
+  });
 
   function handleEditorWillMount(monaco) {
     // Register a new language
@@ -254,9 +267,17 @@ export default function App() {
   function handleOnChange(value, event) {}
 
   async function runCode() {
+    let execToken = genHexString(32);
+    if (token === '0') {
+      setToken(execToken);
+    } else {
+      execToken = token;
+    }
     const value = editorRef.current.getValue();
     const res = await axios.get(
-      `https://risor.curtis7927.workers.dev?code=${encodeURIComponent(value)}`
+      `https://risor.curtis7927.workers.dev?code=${encodeURIComponent(
+        value
+      )}&token=${execToken}`
     );
     setResult(JSON.stringify(res.data));
   }
