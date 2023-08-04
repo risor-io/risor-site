@@ -21,16 +21,18 @@ to evaluate code passed on stdin or from a file.
   </Tab>
   <Tab>
 ```bash copy
-go install github.com/risor-io/risor/cmd/risor@VERSION
+go install -tags aws github.com/risor-io/risor/cmd/risor@VERSION
 ```
 
 For example:
 
 ```bash copy
-go install github.com/risor-io/risor/cmd/risor@v0.8.0
+go install -tags aws github.com/risor-io/risor/cmd/risor@v0.9.0
 ```
 
 The list of release versions is available [on Github](https://github.com/risor-io/risor/releases).
+
+Omit `-tags aws` if you want a smaller binary size.
 
     </Tab>
 

@@ -303,6 +303,16 @@ builtin(list.append)
 "that doesn't exist"
 ```
 
+### getenv(string)
+
+Returns the value of the environment variable with the given name. If the
+variable is not set, an empty string is returned.
+
+```go
+>>> getenv("HOME")
+"/home/username"
+```
+
 ### int(object)
 
 Converts a String or Float to an Int. An error is generated if the operation
@@ -481,6 +491,17 @@ Returns a new set containing the items from the given container object.
 {"one", "two"}
 ```
 
+### setenv(string, string)
+
+Sets the value of the environment variable with the given name to the provided
+value. If the variable does not exist, it is created.
+
+```go
+>>> setenv("FOO", "bar")
+>>> getenv("FOO")
+"bar"
+```
+
 ### sorted(container)
 
 Returns a sorted list of items from the given container object.
@@ -554,4 +575,17 @@ Returns the type name of the given object as a String.
 "map"
 >>> type({1,2,3})
 "set"
+```
+
+### unsetenv(string)
+
+Removes the environment variable with the given name.
+
+```go
+>>> setenv("FOO", "bar")
+>>> getenv("FOO")
+"bar"
+>>> unsetenv("FOO")
+>>> getenv("FOO")
+""
 ```
