@@ -5,6 +5,9 @@
   "builtins": {
     "title": "Builtins"
   },
+  "modules": {
+    "title": "Modules"
+  },
   "types": {
     "title": "Types"
   },

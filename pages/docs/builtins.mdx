@@ -313,6 +313,25 @@ variable is not set, an empty string is returned.
 "/home/username"
 ```
 
+### hash(b byte_slice, algorithm="sha256")
+
+Hashes the given byte_slice b using the specified algorithm. If not provided,
+algorithm defaults to "sha256".
+
+```go
+>>> hash("abc")
+byte_slice("\xbax\x16\xbf\x8f\x01\xcf\xeaAA@\xde]\xae\"#\xb0\x03a\xa3\x96\x17z\x9c\xb4\x10\xffa\xf2\x00\x15\xad")
+>>> hash("a", "md5")
+byte_slice("\f\xc1u\xb9\xc0\xf1\xb6\xa81Ù\xe2iw&a")
+```
+
+Available algorithms:
+
+- `md5`
+- `sha1`
+- `sha256`
+- `sha512`
+
 ### int(object)
 
 Converts a String or Float to an Int. An error is generated if the operation
