@@ -4,8 +4,8 @@
     "theme": {}
   },
   "hello_world": "Hello World",
-  "print_map": "Print a Map",
+  "maps": "Working with Maps",
   "aws": "AWS SDK",
   "pgx": "PostgreSQL",
-  "fetch": "HTTP request"
+  "fetch": "HTTP requests"
 }

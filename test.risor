@@ -1,0 +1,8 @@
+user := {
+    name: "John",
+    age:  30,
+}
+
+delete(user, "age")
+
+print(keys(user))

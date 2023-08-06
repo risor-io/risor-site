@@ -1,44 +1,131 @@
-# Risor Documentation
+import { Callout, Tabs, Tab } from 'nextra/components';
 
-## Use Cases
+# Getting Started
 
-### Configuration
+Risor can be used as a CLI or included as a library in your Go program. It's
+easiest to try it out using the CLI. See the instructions below for installing
+using Homebrew or Go.
 
-A common use case for embedded scripting languages is to make an application
-dynamically configurable, without the need for a recompile. In this case, an
-embedded scripting language can provide a way to load and run configuration
-scripts at runtime.
+This page includes a number of examples of using the CLI with different options,
+to evaluate code passed on stdin or from a file.
 
-### Hot-reloading and Modularity
+## Install the CLI
 
-In large applications, being able to dynamically load, execute, and unload
-scripts while the application is still running can lead to more modular code and
-a faster development cycle. Risor can offer a flexible way to achieve this.
+<Tabs items={['Using Homebrew', 'Using Go']}>
+  <Tab>
+    ```bash copy
+    brew tap risor-io/risor
+    brew install risor
+    risor version
+    ```
+  </Tab>
+  <Tab>
+```bash copy
+go install -tags aws github.com/risor-io/risor/cmd/risor@VERSION
+```
 
-### End-User Scripting
+For example:
 
-If you want to provide a way for users to customize your application's behavior
-or extend its functionality, Risor can be a good choice. Setups like this are
-seen in many video games and software tools that provide APIs for modders and
-plugin creators.
+```bash copy
+go install -tags aws github.com/risor-io/risor/cmd/risor@v0.9.0
+```
 
-### Prototyping
+The list of release versions is available [on Github](https://github.com/risor-io/risor/releases).
 
-Risor can be used for quick prototyping within your Go application. Thanks to
-streamlined syntax and faster development cycles, this can be a great way to
-implement a first version of new features. Later, if the feature is
-well-received, the Risor code can be easily transformed into raw Go as needed.
+Omit `-tags aws` if you want a smaller binary size.
 
-### Interacting with Different Environments
+    </Tab>
 
-Risor is convenient for working with different environments like OS commands,
-web APIs, and databases. Because Risor has excellent libraries built-in, you
-can jump right to the interesting work without spending time researching third
-party libraries.
+</Tabs>
 
-### Glue Code
+## Start the REPL
 
-Scripting languages are often used as "glue code". Risor is handy for
-stitching together different systems due to its lightweight nature. Running a
-Risor script (instead of compiling a Go binary) is great for small integration
-tasks to support a larger application written in Go.
+Running `risor` with no options starts the REPL:
+
+```bash copy
+risor
+```
+
+Press `ctrl+c` to exit the REPL.
+
+## Evaluate a Code Snippet
+
+Use the `-c` option to pass in code as a command line option:
+
+```bash copy
+risor -c "time.now()"
+```
+
+## Evaluate a Script
+
+Pass the path to a Risor script as an argument:
+
+```bash copy
+risor hello.risor
+```
+
+In _hello.risor_:
+
+```go copy filename="hello.risor"
+print("hello")
+```
+
+## Use a Risor Library
+
+Use the `--modules` option to specify a path to a directory containing Risor
+library modules. These can then be imported using an `import` statement.
+
+```go copy filename="mylibraries/lib.risor"
+func add(x, y) { x + y }
+```
+
+```bash copy
+risor --modules mylibraries -c "import lib; lib.add(1, 2)"
+```
+
+## Pass Code via Stdin
+
+Use the `--stdin` option to pass code via stdin:
+
+```bash copy
+echo "time.now()" | risor --stdin
+```
+
+## Show Timing Information
+
+Use the `--timing` option to print the execution time after the script completes:
+
+```bash copy
+risor --timing --code "time.sleep(2)"
+```
+
+## Set the Output Format
+
+The Risor CLI prints the result of the last expression run in the script. By
+default, it attempts to print the result as JSON, but if the value is not
+JSON-serializable, it will print the result as a string. This behavior may be
+overriden using the `--output` option, which accepts `json` or `text` as values.
+
+```bash copy
+risor -c "'Greetings!'" --output text
+```
+
+```bash copy
+risor -c "'Greetings!'" --output json
+```
+
+## Disable Color Output
+
+Use the `--no-color` option to disable color output:
+
+```bash copy
+risor -c "time.now()" --no-color
+```
+
+## Read from Stdin
+
+Stdin is available as `os.stdin`:
+
+```bash copy
+echo test | risor -c "os.stdin.read()"
+```

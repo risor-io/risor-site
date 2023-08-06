@@ -1,0 +1,65 @@
+# Working with Maps
+
+Maps are a container for key-value pairs. In Risor, map keys must always be
+strings, which provides equivalence between maps and JSON objects. Under the
+hood, Risor maps are made from `map[string]interface{}` in Go.
+
+## Declaring Maps
+
+It is optional to surround keys in quotes when declaring a map literal:
+
+```go copy
+{ name: "Alice", age: 30 }
+```
+
+## Iterating Over a Map
+
+```go copy
+m := {
+    a: 1,
+    b: 2,
+    c: 3,
+}
+
+for k, v := range m {
+    print("k:", k, "v:", v)
+}
+```
+
+```text filename="Output:"
+k: a v: 1
+k: b v: 2
+k: c v: 3
+```
+
+## Indexing a Map
+
+```go copy
+user := {
+    name: "John",
+    age:  30,
+}
+
+print(user["name"])
+```
+
+```text filename="Output:"
+John
+```
+
+## Delete an Item
+
+```go copy
+user := {
+    name: "John",
+    age:  30,
+}
+
+delete(user, "age")
+
+print(keys(user))
+```
+
+```text filename="Output:"
+[name]
+```

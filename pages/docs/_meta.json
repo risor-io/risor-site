@@ -1,8 +1,5 @@
 {
   "index": {
-    "title": "Overview"
-  },
-  "getting_started": {
     "title": "Getting Started"
   },
   "builtins": {
@@ -13,5 +10,8 @@
   },
   "how_it_works": {
     "title": "How it Works"
+  },
+  "use_cases": {
+    "title": "Use Cases"
   }
 }
