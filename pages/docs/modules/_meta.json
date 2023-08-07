@@ -13,5 +13,8 @@
   },
   "json": {
     "title": "json"
+  },
+  "math": {
+    "title": "math"
   }
 }
