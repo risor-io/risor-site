@@ -16,5 +16,8 @@
   },
   "math": {
     "title": "math"
+  },
+  "os": {
+    "title": "os"
   }
 }
