@@ -19,5 +19,14 @@
   },
   "os": {
     "title": "os"
+  },
+  "rand": {
+    "title": "rand"
+  },
+  "time": {
+    "title": "time"
+  },
+  "uuid": {
+    "title": "uuid"
   }
 }
