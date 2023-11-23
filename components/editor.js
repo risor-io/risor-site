@@ -274,10 +274,14 @@ export default function App() {
       execToken = token;
     }
     const value = editorRef.current.getValue();
-    const res = await axios.get(
-      `https://risor.curtis7927.workers.dev?code=${encodeURIComponent(
-        value
-      )}&token=${execToken}`
+    const res = await axios.post(
+      `https://dev.api.risor.io`,
+      { code: value },
+      {
+        headers: {
+          Authorization: `Bearer ${execToken}`,
+        },
+      }
     );
     setResult(JSON.stringify(res.data));
   }
