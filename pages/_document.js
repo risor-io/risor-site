@@ -1,7 +1,7 @@
 import React from 'react';
 import Document, { Html, Head, Main, NextScript } from 'next/document';
 import { SkipNavLink } from 'nextra-theme-docs';
-import { GA_TRACKING_ID } from '../lib/gtag';
+import { GA_TRACKING_ID, AW_TRACKING_ID } from '../lib/gtag';
 
 class MyDocument extends Document {
   render() {
@@ -23,6 +23,8 @@ class MyDocument extends Document {
             gtag('config', '${GA_TRACKING_ID}', {
               page_path: window.location.pathname,
             });
+
+            gtag('config', '${AW_TRACKING_ID}');
           `,
             }}
           />
