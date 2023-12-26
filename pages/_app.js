@@ -23,7 +23,7 @@ export default function Nextra({
 
   // On initial page load
   useEffect(() => {
-    gtag.pageview(window.location.url);
+    gtag.pageview(window.location.pathname ? window.location.pathname : '/');
   }, []);
 
   return (
