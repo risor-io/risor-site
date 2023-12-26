@@ -8,8 +8,9 @@ export default function Nextra({
   Component,
   pageProps: { session, ...pageProps },
 }) {
-  // Google analytics
   const router = useRouter();
+
+  // On route change
   useEffect(() => {
     const handleRouteChange = (url) => {
       gtag.pageview(url);
@@ -19,6 +20,11 @@ export default function Nextra({
       router.events.off('routeChangeComplete', handleRouteChange);
     };
   }, [router.events]);
+
+  // On initial page load
+  useEffect(() => {
+    gtag.pageview(window.location.url);
+  }, []);
 
   return (
     <MantineProvider
