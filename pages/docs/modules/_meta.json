@@ -8,6 +8,9 @@
   "bytes": {
     "title": "bytes"
   },
+  "exec": {
+    "title": "exec"
+  },
   "image": {
     "title": "image"
   },

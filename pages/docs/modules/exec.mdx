@@ -1,0 +1,355 @@
+# exec
+
+## Functions
+
+### command
+
+```go filename="Function signature"
+command(file string, args ...string) exec.command
+```
+
+Creates a new `exec.command` targeting a specific `file` to execute,
+followed by arguments to execute the command with.
+
+Nothing is executed by this function alone, but instead only a [`exec.command`](#type-command)
+object is returned. To execute `file`, you must call the [`run`](#commandrun)
+method on the [`exec.command`](#type-command) object.
+
+The lookup if `file` executable exists is also not performed until the [`run`](#commandrun)
+method is called.
+
+```go copy filename="Example"
+>>> exec.command("bash")
+exec.command("bash")
+>>> exec.command("bash", "-c", "echo hello world")
+exec.command("bash", "-c", "echo hello world")
+>>> exec.command("file-that-does-not-exist")
+exec.command("file-that-does-not-exist")
+>>> cmd := exec.command("date", "-Iseconds")
+>>> cmd.run()
+>>> cmd.stdout
+"2024-01-09T21:33:48+01:00\n"
+```
+
+### look_path
+
+```go filename="Function signature"
+look_path(file string) string
+```
+
+Searches for an executable named `file` in the directories named by the `PATH`
+environment variable.
+If `file` contains a slash, it is tried directly and the `PATH` is not consulted.
+Otherwise, on success, the result is an absolute path.
+
+```go copy filename="Example"
+>>> exec.look_path("bash")
+"/usr/bin/bash"
+```
+
+### exec
+
+```go filename="Function signature"
+exec(file string, args list = [], params map = {}) exec.result
+```
+
+Searches for an executable named `file`, similarly to the `exec.look_path`
+function, and then executes it. The optional parameter `args` are passed as
+arguments when executing `file`, and the optional parameter `params` allows
+additional configurations for how to execute the `file`.
+
+In effect, it creates a new [`exec.command`](#type-command) object,
+configures it using the `params`,
+and then executes its [`run`](#commandrun) method.
+Except this function returns [`exec.result`](#type-result) instead of
+[`exec.command`](#type-command).
+
+```go copy filename="Example"
+>>> exec("date")
+exec.result(pid: 13289)
+>>> exec("date").stdout
+"Tue Jan  9 09:21:04 PM CET 2024\n"
+>>> exec("date", ["-Iseconds", "--utc"]).stdout
+"2024-01-09T20:22:43+00:00\n"
+>>> exec("date", ["-Iseconds"], {"env": {"TZ": "America/New_York"}}).stdout
+"2024-01-09T15:24:57-05:00\n"
+```
+
+Available configuration options for `params`:
+
+```json
+{
+  "stdout": os.stdout, // type: io.Writer
+  "stderr": os.stderr, // type: io.Writer
+  "stdin": os.stdin, // type: io.Reader | string | byte_slice
+  "dir": "/foo/bar", // working directory
+  "env": {
+    // values must be string
+    "MY_VAR": "123",
+    "TZ": "Europe/Berlin"
+  }
+}
+```
+
+## Type command
+
+Returned from the function with the same name: [`exec.command()`](#command).
+
+### command.path
+
+```go filename="Field signature"
+command.path string
+```
+
+Path of the command to run.
+
+```go copy filename="Example"
+>>> cmd := exec.command("bash")
+>>> cmd.path
+"/usr/bin/bash"
+```
+
+### command.dir
+
+```go filename="Field signature"
+command.dir string
+```
+
+Dir specifies the working directory of the command.
+If dir is the empty string, it will run the command in the calling process's
+current directory.
+
+```go copy filename="Example"
+>>> cmd := exec.command("bash", "-c", "pwd")
+>>> cmd.dir = "/tmp"
+>>> cmd.run()
+>>> cmd.stdout
+"/tmp\n"
+```
+
+### command.env
+
+```go filename="Field signature"
+command.env list
+```
+
+Env specifies the environment of the process.
+Each entry is of the form `"key=value"`.
+If `env` is nil, the new process uses the current process's environment.
+If `env` contains duplicate environment keys, only the last value in the list
+for each duplicate key is used.
+
+As a special case on Windows, `SYSTEMROOT` is always added if missing and not
+explicitly set to the empty string.
+
+```go copy filename="Example"
+>>> cmd := exec.command("bash", "-c", "echo $MY_VAR")
+>>> cmd.env = ["MY_VAR=1234"]
+>>> cmd.run()
+>>> cmd.stdout
+"1234\n"
+```
+
+### command.stdout
+
+```go filename="Field signature"
+command.stdout io.Writer
+```
+
+The process' standard output pipe. Defaults to a buffer.
+
+If read after process has been executed, and the value was left as default,
+then the field will return a string.
+
+```go copy filename="Example"
+>>> cmd := exec.command("bash", "-c", "echo hello stdout; echo hello stderr >&2")
+>>> cmd.run()
+>>> cmd.stdout
+"hello stdout\n"
+```
+
+### command.stderr
+
+```go filename="Field signature"
+command.stderr io.Writer
+```
+
+The process' standard error pipe. Defaults to a buffer.
+
+If read after process has been executed, and the value was left as default,
+then the field will return a string.
+
+```go copy filename="Example"
+>>> cmd := exec.command("bash", "-c", "echo hello stdout; echo hello stderr >&2")
+>>> cmd.run()
+>>> cmd.stderr
+"hello stderr\n"
+```
+
+### command.run
+
+```go filename="Method signature"
+command.run()
+```
+
+Run starts the command and waits for it to complete.
+Run will error if called multiple times.
+
+The result can be found in the command object's other fields, such as
+[`command.stdout`](#commandstdout),
+when the process exists with a zero exit code.
+
+To capture the output in the case of a non-zero exit code, use [`try`](../builtins.mdx#try).
+
+```go copy filename="Example"
+>>> cmd := exec.command("bash", "-c", "exit 0")
+>>> cmd.run()
+>>> cmd2 := exec.command("bash", "-c", "exit 1")
+>>> cmd2.run()
+exit status 1
+>>> cmd3 := exec.command("bash", "-c", "echo message from failed app; exit 1")
+>>> try(cmd3.run, "uh oh")
+"uh oh"
+>>> cmd3.stdout
+"message from failed app\n"
+```
+
+### command.combined_output
+
+```go filename="Method signature"
+command.combined_output() byte_slice
+```
+
+Similar to [`command.run`](#commandrun), but returns the combined output
+of the process' both standard output and standard error as a byte slice.
+
+```go copy filename="Example"
+>>> cmd := exec.command("bash", "-c", "echo hello stdout; echo hello stderr >&2")
+>>> cmd.combined_output()
+byte_slice("hello stdout\nhello stderr\n")
+```
+
+### command.output
+
+```go filename="Method signature"
+command.output() byte_slice
+```
+
+Similar to [`command.run`](#commandrun), but returns the process'
+standard output as a byte slice.
+
+```go copy filename="Example"
+>>> cmd := exec.command("bash", "-c", "echo hello stdout; echo hello stderr >&2")
+>>> cmd.output()
+byte_slice("hello stdout\n")
+```
+
+### command.environ
+
+```go filename="Method signature"
+command.environ() list
+```
+
+Returns a copy of the environment in which the command would be run as it is
+currently configured.
+
+```go copy filename="Example"
+>>> cmd := exec.command("bash", "-c", "echo hello stdout; echo hello stderr >&2")
+>>> cmd.environ()
+["TERM=xterm-256color", "SHELL=/bin/bash", "USER=alice", ...]
+```
+
+### command.start
+
+```go filename="Method signature"
+command.start()
+```
+
+Starts the command (in the background) but does not wait for it to complete.
+Will error if called multiple times.
+
+After a successful call to `command.start` the [`command.wait`](#commandwait)
+method must be called in order to release associated system resources.
+
+```go copy filename="Example"
+>>> cmd := exec.command("sleep", "5s")
+>>> cmd.start() // finishes immediately
+>>> cmd.wait() // waits the remaining 5s since start() was called
+```
+
+### command.wait
+
+```go filename="Method signature"
+command.wait()
+```
+
+Waits for the started command to complete.
+Will error if command has not yet been started with [`command.start`](#commandstart)
+or if called multiple times.
+
+```go copy filename="Example"
+>>> cmd := exec.command("sleep", "5s")
+>>> cmd.start() // finishes immediately
+>>> cmd.wait() // waits the remaining 5s since start() was called
+```
+
+## Type result
+
+Returned from : [`exec()`](#exec).
+
+### result.pid
+
+```go filename="Field signature"
+result.pid int // readonly
+```
+
+Process ID of the executed process.
+
+```go copy filename="Example"
+>>> exec("echo").pid
+5375
+```
+
+### result.stdout
+
+```go filename="Field signature"
+result.stdout string // readonly
+```
+
+Standard output of the process.
+
+```go copy filename="Example"
+>>> result := exec("bash", ["-c", "echo hello stdout; echo hello stderr >&2"])
+>>> result.stdout
+"hello stdout\n"
+```
+
+### result.stderr
+
+```go filename="Field signature"
+result.stderr string // readonly
+```
+
+Standard error of the process.
+
+```go copy filename="Example"
+>>> result := exec("bash", ["-c", "echo hello stdout; echo hello stderr >&2"])
+>>> result.stderr
+"hello stderr\n"
+```
+
+### result.json
+
+```go filename="Method signature"
+result.json() any
+```
+
+Attempts to parse the process' standard output and returns that as the
+appropriate Risor type.
+
+```go copy filename="Example"
+>>> exec("echo", [`[true, "foo", null, 123]`]).json()
+[true, "foo", nil, 123]
+>>> exec("echo", [`invalid json text`]).json()
+value error: json.unmarshal failed with: invalid character 'i' looking for beginning of value
+```
