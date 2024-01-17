@@ -1,0 +1,27 @@
+# Contributing Modules
+
+Adding new modules to Risor is a great way to get involved with the project.
+For example, contributors have added modules for jmespath, sql, and vault.
+
+If the module wraps a package in the Go standard library, then it can be added
+by default to the Risor CLI and Go library, since it doesn't introduce additional
+dependencies. Otherwise, it can be added as an optional module that must have its
+own `go.mod` file. In both cases, the module can live in the same location in this
+Git repository.
+
+If, when the module is built, the Go binary size is significantly increased, then
+the module should also be put on a Go build tag to make it optional in the Risor
+CLI build. This is currently the case for the `aws` and `vault` modules for example.
+
+Here are a few tips on how to do this:
+
+- Create a new directory under `modules` for your module
+- In that directory, run `go mod init github.com/risor-io/risor/modules/<name>`
+- Mimic the Go code for one of the existing modules, definining a `Module`
+  and/or `Builtins` function.
+- Update `cmd/risor/root.go` to add the module and/or builtins in the Risor CLI.
+- Add a `modules/<name>/<name>.md` file with documentation.
+- Add some unit tests in your module.
+- Confirm `make test` passes.
+- Run `make tidy` to make sure all the go.mod files are up-to-date.
+- Open a pull request.

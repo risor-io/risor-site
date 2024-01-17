@@ -8,11 +8,26 @@
   "bytes": {
     "title": "bytes"
   },
+  "exec": {
+    "title": "exec"
+  },
+  "filepath": {
+    "title": "filepath"
+  },
+  "fmt": {
+    "title": "fmt"
+  },
+  "http": {
+    "title": "http"
+  },
   "image": {
     "title": "image"
   },
   "json": {
     "title": "json"
+  },
+  "kubernetes": {
+    "title": "kubernetes"
   },
   "math": {
     "title": "math"
@@ -20,13 +35,34 @@
   "os": {
     "title": "os"
   },
+  "pgx": {
+    "title": "pgx"
+  },
   "rand": {
     "title": "rand"
+  },
+  "regexp": {
+    "title": "regexp"
+  },
+  "sql": {
+    "title": "sql"
+  },
+  "strconv": {
+    "title": "strconv"
+  },
+  "strings": {
+    "title": "strings"
+  },
+  "template": {
+    "title": "template"
   },
   "time": {
     "title": "time"
   },
   "uuid": {
     "title": "uuid"
+  },
+  "vault": {
+    "title": "vault"
   }
 }

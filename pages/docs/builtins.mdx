@@ -91,10 +91,10 @@ buffer("ABC")
 "ABC"
 ```
 
-<Callout>
+<Callout type="info" emoji="ℹ️">
   The Buffer type interoperates easily with Strings and ByteSlices. The Buffer
-  object's Go type implements [io.ReadWriter](https://pkg.go.dev/io#ReadWriter)
-  which means it can interoperate with with any Go function that accepts an
+  Go type implements [io.ReadWriter](https://pkg.go.dev/io#ReadWriter)
+  which means it can be provided to any Go function that accepts an
   `io.Reader` or `io.Writer`.
 </Callout>
 
@@ -300,7 +300,7 @@ that may be one of the following values:
 automatically converted to a byte slice, such as strings. Other codecs may accept
 different types.
 
-<Callout>
+<Callout type="info" emoji="ℹ️">
   Additional codecs may be registered by calling the Go function
   `builtins.RegisterCodec`
 </Callout>
@@ -319,6 +319,39 @@ stops execution of the program.
 >>> error("kaboom")
 kaboom
 ```
+
+### fetch
+
+```go filename="Function signature"
+fetch(url string, opts map) http.response
+```
+
+Fetches the content of the given URL and returns an `http.response` object. The
+response object provides access to the HTTP status code, headers, and body.
+
+The following options are supported:
+
+| Name    | Type                 | Description                                            |
+| ------- | -------------------- | ------------------------------------------------------ |
+| method  | string               | The HTTP method to use.                                |
+| headers | map                  | The headers to send with the request.                  |
+| params  | map                  | The query parameters to send with the request.         |
+| body    | byte_slice or reader | The request body.                                      |
+| timeout | int                  | Request timeout in milliseconds.                       |
+| data    | object               | Object to marshal as JSON and send in the request body |
+
+```go copy filename="Example"
+>>> r := fetch("https://httpbin.org/get")
+>>> r.status_code
+200
+>>> r.header
+{"Connection": ["keep-alive"], "Content-Length": ["14"], "Content-Type": ["text/plain"], "Date": ["Mon, 15 Jan 2024 00:06:56 GMT"], "Server": ["nginx/1.25.1"], "Vary": ["Origin"]}
+>>> r.text()
+"143.89.131.113"
+```
+
+Visit the [http.response documentation](/docs/modules/http#response) for more information
+about the response object and its attributes.
 
 ### float_slice
 
@@ -458,6 +491,29 @@ iter_entry("b", true)
 true
 ```
 
+### jmespath
+
+```go filename="Function signature"
+jmespath(data object, expression string) object
+```
+
+Queries data using the given [JMESPath](https://jmespath.org/) expression. Note
+the data is provided as the first argument which makes it useful in pipe
+expressions.
+
+```go copy filename="Example"
+>>> jmespath({"count": 42, "name": "foo"}, "count")
+42
+>>> [{"name": "a"}, {"name": "b"}] | jmespath("[].name")
+["a", "b"]
+```
+
+<Callout type="info" emoji="ℹ️">
+  The `jmespath` built-in is included in the Risor CLI by default. However if
+  Risor is being used as a library, the `jmespath` module must be imported
+  explicitly.
+</Callout>
+
 ### keys
 
 ```go filename="Function signature"
@@ -499,7 +555,7 @@ Returns the size of the given container. Container types include:
 4
 ```
 
-<Callout>
+<Callout type="info" emoji="ℹ️">
   Note that for String types, the length is the _number of underlying runes_ in
   the string, not the number of bytes. This is subtly different than taking the
   `len(s)` of a string in Go, which returns the number of bytes. Conceptually,
@@ -557,6 +613,20 @@ if one is provided. This behaves similarly to `dict` in Python.
 {"k1": 1, "k2": 2}
 >>> map({"a", "b", "c"}) // converts a set to a map
 {"a": true, "b": true, "c": true}
+```
+
+### nslookup
+
+```go filename="Function signature"
+nslookup(name string, query_type string = "HOST", resolver_addr string = "")
+```
+
+Look up the given domain name using the specified query type (default "HOST") and resolver
+address (default "" for system default).
+
+```go copy filename="Example"
+>>> nslookup("google.com")
+["172.253.115.138", "172.253.115.100", "172.253.115.139", "172.253.115.113", "172.253.115.101", "172.253.115.102", "2607:f8b0:4004:c08::8b", "2607:f8b0:4004:c08::71", "2607:f8b0:4004:c08::8a", "2607:f8b0:4004:c08::65"]
 ```
 
 ### ord
