@@ -23,6 +23,9 @@
   "image": {
     "title": "image"
   },
+  "jmespath": {
+    "title": "jmespath"
+  },
   "json": {
     "title": "json"
   },
@@ -64,5 +67,8 @@
   },
   "vault": {
     "title": "vault"
+  },
+  "yaml": {
+    "title": "yaml"
   }
 }
