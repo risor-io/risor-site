@@ -1,4 +1,4 @@
-import { Callout, Tabs, Tab } from 'nextra/components';
+import { Tabs, Tab } from 'nextra/components';
 
 # Getting Started
 
@@ -23,10 +23,10 @@ to evaluate code passed on stdin or from a file.
 ```bash copy
 git clone git@github.com:risor-io/risor.git
 cd risor/cmd/risor
-go install -tags aws .
+go install -tags aws,vault,k8s .
 ```
 
-Omit `-tags aws` if you want a smaller binary size.
+Omit `-tags aws,vault,k8s` if you want a smaller binary size.
 
 Note that you unfortunately cannot use `go install` with just the Risor URL due
 to this [Go limitation](https://github.com/golang/go/issues/44840). Instead, first
