@@ -8,6 +8,9 @@
   "bytes": {
     "title": "bytes"
   },
+  "cli": {
+    "title": "cli"
+  },
   "exec": {
     "title": "exec"
   },
@@ -16,6 +19,9 @@
   },
   "fmt": {
     "title": "fmt"
+  },
+  "gha": {
+    "title": "gha"
   },
   "http": {
     "title": "http"

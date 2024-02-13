@@ -3,6 +3,7 @@ import { MantineProvider } from '@mantine/core';
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import * as gtag from '../lib/gtag';
+import { getHighlighter } from 'shiki';
 
 export default function Nextra({
   Component,
