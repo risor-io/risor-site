@@ -64,22 +64,6 @@
         }
       ]
     },
-    "delimiters": {
-      "patterns": [
-        {
-          "match": ",",
-          "name": "punctuation.other.comma.risor"
-        },
-        {
-          "match": "\\.(?!\\.\\.)",
-          "name": "punctuation.other.period.risor"
-        },
-        {
-          "match": ":(?!=)",
-          "name": "punctuation.other.colon.risor"
-        }
-      ]
-    },
     "keywords": {
       "patterns": [
         {

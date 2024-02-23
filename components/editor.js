@@ -1,19 +1,22 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import Editor from '@monaco-editor/react';
 import { Button, Textarea } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
 import axios from 'axios';
 
 const keywords = [
+  'as',
   'break',
   'case',
   'const',
   'continue',
   'default',
+  'defer',
   'else',
   'false',
   'for',
   'func',
+  'go',
   'if',
   'import',
   'in',
@@ -39,6 +42,7 @@ const typeKeywords = [
   'map',
   'set',
   'string',
+  'chan',
 ];
 
 const escapes =
@@ -73,6 +77,7 @@ const operators = [
   '-=',
   '*=',
   '/=',
+  '<-',
 ];
 
 const defaultCode = `
