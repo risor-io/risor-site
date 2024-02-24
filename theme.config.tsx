@@ -26,18 +26,18 @@ const config: DocsThemeConfig = {
     text: 'Risor',
     // component: undefined,
   },
-  // banner: {
-  //   key: '1.0-release',
-  //   text: (
-  //     <a href='https://risor.io' target='_blank'>
-  //       🎉 Risor 1.0! is released. Read more →
-  //     </a>
-  //   ),
-  // },
+  banner: {
+    key: '1.0-release',
+    text: (
+      <a href='/blog/release_1_4' target='_blank'>
+        🎉 Risor 1.4.0 is released! Read more →
+      </a>
+    ),
+  },
   navbar: {
     // extraContent: <LoginButton />,
   },
-  darkMode: false,
+  darkMode: true,
   feedback: {
     content: null,
   },
