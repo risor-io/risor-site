@@ -28,19 +28,7 @@ export default function Nextra({
   }, []);
 
   return (
-    <MantineProvider
-      withGlobalStyles
-      withNormalizeCSS
-      theme={{
-        colorScheme: 'dark',
-        globalStyles: (theme) => ({
-          button: {
-            backgroundColor: 'unset !important',
-            backgroundImage: 'unset !important',
-          },
-        }),
-      }}
-    >
+    <MantineProvider withGlobalStyles withNormalizeCSS theme={{}}>
       <Component {...pageProps} />
     </MantineProvider>
   );
