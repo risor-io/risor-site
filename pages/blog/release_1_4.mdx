@@ -1,0 +1,231 @@
+---
+image: https://github.com/risor-io/risor/raw/main/static/images/risor-logo-nopad.png
+description: 'Release v1.4.0: new keywords, HTTP servers, CLIs ...'
+date: February 24th, 2024
+---
+
+## Release v1.4.0
+
+Risor v1.4.0 is here! This release includes several interesting new features
+that you also might find familiar if you know Go. For anyone new to Risor, it's
+a scripting language written in Go that interoperates well with all the existing
+Go libraries and its overall ecosystem.
+
+For a quick taste, here's an example of an HTTP server one-liner using the Risor CLI:
+
+```bash copy
+risor -c 'http.listen_and_serve(":8085", func(w, r) { "OK" })'
+```
+
+## New Features
+
+This release adds support for the `go` and `defer` keywords, channels, HTTP
+servers, improved Risor VM cloning, CLI utilities, and `range` and from-import
+statement improvements. More details on all of this below.
+
+### New Risor Keywords
+
+The `go` keyword is now supported, with a direct correspondence to the underlying
+capability from the Go runtime. This allows you to run Risor code concurrently.
+Under the hood, when `go` is used, the active Risor VM is cloned in order to
+have a separate Risor frame and data stack for the new goroutine. Since Risor
+VMs are lightweight, this is in-fitting with Go's own lightweight goroutines.
+
+```risor
+go func(n) {
+    for i := 0; i < n; i++ {
+        print("count:", i)
+    }
+}(4)
+
+time.sleep(1)
+```
+
+Outputs:
+
+```
+count: 0
+count: 1
+count: 2
+count: 3
+```
+
+Similarly, there is now Risor support for the Go `defer` keyword, again with a
+fairly direct correspondence to the underlying Go feature. Multiple defer
+statements can be made and they are executed in reverse order when the function
+returns.
+
+```risor
+func() {
+    defer print("world")
+    defer print("hello")
+}()
+```
+
+Outputs:
+
+```
+hello
+world
+```
+
+### Channels
+
+Channels are now supported and are the primary means of communication between
+Risor goroutines. All channels are typed to Risor's `object.Object` type.
+Channel buffering is configurable as in Go, and channels can be closed. The
+`<-` operator is used to send and receive values.
+
+As a convenience, a new channel can be created simply by calling `chan()` with
+an optional buffer size. Creation using `make(chan)` is also supported. Note that
+there is no type parameter since all channels are typed to `object.Object`.
+
+Iteration over channels behaves as in Go.
+
+```risor
+ch := chan(2)
+ch <- 1
+ch <- 2
+close(ch)
+
+for _, value := range ch {
+    print(value)
+}
+```
+
+### HTTP servers
+
+Risor can now be used to run HTTP servers and it leverages the new HTTP mux
+behavior from the Go 1.22 release. I think this really nicely shows how Risor's
+concise syntax can be used to quickly put together a simple backend.
+
+As a convenience in Risor, handler return values may be used as the response
+body. If the return value is a string or byte slice, it is written to the body
+as-is. If the return value is a map or list, it is marshaled to JSON automatically
+and written to the body.
+
+Since the `return` statement can also be omitted in Risor, you can also just
+have the handler implicitly return the value of the last expression.
+
+```risor
+http.handle("/", func(w, r) {
+    return "OK"
+})
+
+// Explicit write_header and write calls
+http.handle("POST /messages", func(w, r) {
+    w.write_header(201)
+    w.write("message sent")
+})
+
+// Using path value feature from Go 1.22, with implicit JSON response marshaling
+http.handle("/animals/{name}", func(w, r) {
+    return { animal: r.path_value("name") }
+})
+
+http.listen_and_serve(":8081")
+```
+
+### CLI Apps
+
+It was already possible to write simple CLIs in Risor, but this release adds
+more sophisticated support by wrapping [urfave/cli](https://github.com/urfave/cli).
+
+In your Risor script, use the following shebang line to ensure that CLI args are
+passed correctly to the CLI app:
+
+```
+#!/usr/bin/env risor --
+```
+
+Building the CLI app then looks very similar to how you would do it in Go when
+using `urfave/cli`. Create an app, add commands and flags, then run the app.
+
+```risor
+#!/usr/bin/env risor --
+
+cli.app({
+    name: "encode",
+    help_name: "encode",
+    description: "Encode input text using various codecs",
+    commands: [
+        cli.command({
+            name: "base64",
+            flags: [
+                cli.flag({
+                    name: "verbose",
+                    aliases: ["v"],
+                    usage: "Print verbose output",
+                    env_vars: ["VERBOSE"],
+                    value: false,
+                }),
+            ],
+            action: func(ctx) {
+                if ctx.bool("verbose") {
+                    // yadda yadda
+                }
+                for _, text := range ctx.args() {
+                    print(encode(text, "base64"))
+                }
+            }
+        }),
+    ]
+}).run()
+```
+
+### Range Over Integers
+
+The `range` statement now supports ranging over integers, as is now available in
+Go 1.22:
+
+```risor
+for i := range 5 {
+    print(i)
+}
+```
+
+Note that Risor is a bit more flexible with range statements than Go, since
+Risor's `range` statement can be used with any object that implements the
+Risor `object.Iterable` interface. That's why all these examples work in Risor:
+
+```risor
+for i := range [1, 2, 3] {
+    print(i)
+}
+
+for i, s := range "hello" {
+    print(i, s)
+}
+
+it := iter(5)
+for i := range it {
+    print(i)
+}
+```
+
+### From-Import Improvement
+
+The from-import statement now supports importing multiple names from a package
+with optional name aliasing. This is quite similar to Python's from-import behavior.
+
+```risor
+from cli import (
+    app,
+    command,
+    flag,
+)
+```
+
+## Wrapping Up
+
+Thanks for reading about the new release. As usual, please drop in on the
+[GitHub discussions](https://github.com/risor-io/risor/discussions) to share
+any feedback or ask questions.
+
+If you're new to Risor, the quickest way to install it is using Homebrew:
+
+```
+brew install risor
+```
+
+Happy scripting!
