@@ -1,0 +1,246 @@
+---
+image: https://github.com/risor-io/risor/raw/main/static/images/risor-logo-nopad.png
+description: 'This post explores the Risor opcodes, compiler, and VM ...'
+date: March 12, 2024
+---
+
+_This post explores Risor's compiler and opcodes and shows how the implementation
+was influenced by CPython. Risor is an embeddable scripting language for the Go
+ecosystem. If you find Risor interesting, consider joining the growing community
+of contributors at [github.com/risor-io/risor](https://github.com/risor-io/risor)._
+
+## Background
+
+Earlier in 2024, I built a compiler and virtual machine for Risor that
+executes instructions in the form of opcodes. This was a significant upgrade
+for the project, most notably making Risor _significantly_ faster.
+
+It was also less work than I expected. I was able to get some early quick wins,
+which made me feel the progress and gave me the confidence to continue.
+
+While I referred to [Writing an Interpreter in Go](https://interpreterbook.com/)
+during the initial development of Risor (then called Tamarin), I didn't use its
+companion "Writing a Compiler in Go". Instead, I heavily referenced CPython's
+opcodes. In part, I did this because Risor is influenced by Python, and I
+suspected its opcodes would serve me well in Risor.
+
+This approach seems to have worked well.
+
+## The Python Disassembler
+
+In Python, you can inspect the opcodes of a function using the
+[dis](https://docs.python.org/3/library/dis.html) module. I used this to reverse
+engineer how various snippets of Python compile, and would then take a similar
+approach in Risor.
+
+Here's a simple example in Python:
+
+```python showLineNumbers copy filename="example.py"
+import dis
+
+def example(a, b):
+    return a + b
+
+dis.dis(example)
+```
+
+Running that Python code will output:
+
+```
+  3           0 RESUME                   0
+
+  4           2 LOAD_FAST                0 (a)
+              4 LOAD_FAST                1 (b)
+              6 BINARY_OP                0 (+)
+             10 RETURN_VALUE
+```
+
+The meaning of this is as follows, using the first LOAD_FAST line as an example:
+
+```
+LINE_NUMBER  BYTECODE_OFFSET  OPCODE     OPERAND
+-----------  ---------------  ---------  -------
+          4                2  LOAD_FAST  0 (a)
+```
+
+Python and Risor both use a stack-based virtual machine, in which variables are
+pushed onto the stack and then popped off when used in an operation. The two
+[LOAD_FAST](https://docs.python.org/3/library/dis.html#opcode-LOAD_FAST)
+opcodes in this example push `a` and `b` onto the stack. The
+[BINARY_OP](https://docs.python.org/3/library/dis.html#opcode-BINARY_OP)
+opcode then pops them both off and pushes the result of the addition
+back onto the stack.
+
+The reason for the name LOAD_FAST is that the operation loads a local variable
+by its index in the local variables array, which is a fast operation compared to
+looking up a variable by name from a hash table.
+
+Using index-based lookups with LOAD_FAST is one of the reasons that Risor
+became significantly faster with the introduction of the Risor VM.
+
+You can also run the Python `dis` module on a file like this:
+
+```bash copy filename="bash"
+python -m dis ./example.py
+```
+
+This way of disassembling is especially useful because it shows the bytecode for
+the entire module, including all functions and classes.
+
+## The Risor Disassembler
+
+In Risor, we'll use this equivalent function in a file `example.risor` to compare:
+
+```risor filename="example.risor" showLineNumbers copy
+func example(a, b) {
+    return a + b
+}
+```
+
+As of the [v1.5.0](https://github.com/risor-io/risor/releases/tag/v1.5.0) release,
+there is a `risor dis` command that can be used to disassemble Risor scripts.
+Provide code via the `--code` flag or provide a path to a Risor script. Here's
+an example of using the `risor dis` command to disassemble the "example" function:
+
+```bash copy filename="bash"
+risor dis --func example ./example.risor
+```
+
+```plaintext filename="output"
++--------+--------------+----------+------+
+| OFFSET |    OPCODE    | OPERANDS | INFO |
++--------+--------------+----------+------+
+|      0 | LOAD_FAST    |        0 | a    |
+|      2 | LOAD_FAST    |        1 | b    |
+|      4 | BINARY_OP    |        1 | +    |
+|      6 | RETURN_VALUE |          |      |
++--------+--------------+----------+------+
+```
+
+The quickest way to see the opcodes for a code snippet is just to pass the
+snippet via flags to the command:
+
+```bash copy filename="bash"
+risor dis --code 'math.max([1, 3, 0])'
+```
+
+```plaintext filename="output"
++--------+-------------+----------+------+
+| OFFSET |   OPCODE    | OPERANDS | INFO |
++--------+-------------+----------+------+
+|      0 | LOAD_GLOBAL |       45 | math |
+|      2 | LOAD_ATTR   |        0 | max  |
+|      4 | LOAD_CONST  |        0 | 1    |
+|      6 | LOAD_CONST  |        1 | 3    |
+|      8 | LOAD_CONST  |        2 | 0    |
+|     10 | BUILD_LIST  |        3 |      |
+|     12 | CALL        |        1 |      |
++--------+-------------+----------+------+
+```
+
+The `INFO` column shows information that the disassembler can deduce about the
+operands. In the example just above, `LOAD_GLOBAL` is loading the `math` module
+onto the stack, which is at index 45 in the globals array. For constants, the
+actual value of the constant is shown in the `INFO` column.
+
+## Risor Opcodes
+
+Risor currently has 50 opcodes. While working on this I found it interesting how
+much can be accomplished with a small number of opcodes. This is part of the
+reason I felt comfortable with working on this project. The 
+[compiler](https://github.com/risor-io/risor/blob/main/compiler/compiler.go) in
+Risor is still less than 2000 lines of code, which is very manageable.
+
+Some opcodes in Risor are an exact match of the opcode with the same name in
+Python (at the time of writing). In other cases, I took the liberty to simplify
+and add opcodes that felt appropriate in Risor.
+
+Here is the complete set of Risor opcodes today. Note `TOS` is an abbreviation
+for the value on "top of the stack" and `TOS1` is the value just below `TOS`.
+
+| Opcode                | ID  | Operands                  | Purpose                                                              |
+| --------------------- | --- | ------------------------- | -------------------------------------------------------------------- |
+| Invalid               | 0   | -                         | Represents an invalid opcode.                                        |
+| Nop                   | 1   | -                         | No operation, does nothing.                                          |
+| Halt                  | 2   | -                         | Stops execution.                                                     |
+| Call                  | 3   | argc                      | Calls a function.                                                    |
+| ReturnValue           | 4   | -                         | Returns from the current function (value on TOS).                    |
+| Defer                 | 5   | -                         | Defers execution of a partial (partial func on TOS).                 |
+| Go                    | 6   | -                         | Starts a new goroutine (partial func on TOS).                        |
+| JumpBackward          | 10  | offset                    | Jumps backward by the given offset.                                  |
+| JumpForward           | 11  | offset                    | Jumps forward by the given offset.                                   |
+| PopJumpForwardIfFalse | 12  | offset                    | Pops the top of the stack; if false, jumps forward.                  |
+| PopJumpForwardIfTrue  | 13  | offset                    | Pops the top of the stack; if true, jumps forward.                   |
+| LoadAttr              | 20  | name_index                | Loads an attribute from the TOS object.                              |
+| LoadFast              | 21  | var_index                 | Loads a local variable.                                              |
+| LoadFree              | 22  | free_var_index            | Loads a free variable (closure).                                     |
+| LoadGlobal            | 23  | global_var_index          | Loads a global variable.                                             |
+| LoadConst             | 24  | const_index               | Loads a constant.                                                    |
+| StoreAttr             | 30  | name_index                | Stores an attribute.                                                 |
+| StoreFast             | 31  | var_index                 | Stores a local variable.                                             |
+| StoreFree             | 32  | free_var_index            | Stores a free variable (closure).                                    |
+| StoreGlobal           | 33  | global_var_index          | Stores a global variable.                                            |
+| BinaryOp              | 40  | op_type                   | Performs a binary operation (add, subtract, etc.).                   |
+| CompareOp             | 41  | op_type                   | Performs a comparison operation (equal, less than, etc.).            |
+| UnaryNegative         | 42  | -                         | TOS = -TOS                                                           |
+| UnaryNot              | 43  | -                         | TOS = not TOS                                                        |
+| BuildList             | 50  | count                     | Builds a list from the top `count` stack objects.                    |
+| BuildMap              | 51  | count                     | Builds a map from the top `count` stack objects.                     |
+| BuildSet              | 52  | count                     | Builds a set from the top `count` stack objects.                     |
+| BuildString           | 53  | count                     | Builds a string from the top `count` stack objects.                  |
+| BinarySubscr          | 60  | -                         | Indexes a container, where TOS=index and TOS1=container.             |
+| StoreSubscr           | 61  | -                         | Stores in a container, where TOS=index, TOS1=container, TOS2=value.  |
+| ContainsOp            | 62  | ignored                   | Checks if TOS1 is in the TOS object (a container).                   |
+| Length                | 63  | -                         | Push the length of the TOS object (a container).                     |
+| Slice                 | 64  | -                         | Slices a container, where TOS=start, TOS1=stop, TOS2=container.      |
+| Unpack                | 65  | count                     | Unpacks `count` items from the TOS container onto the stack.         |
+| Swap                  | 70  | offset                    | Swaps the TOS object with TOS[offset].                               |
+| Copy                  | 71  | offset                    | Copies the TOS object with TOS[offset].                              |
+| PopTop                | 72  | -                         | Pops the top element from the stack.                                 |
+| Nil                   | 80  | -                         | Pushes a nil value onto the stack.                                   |
+| False                 | 81  | -                         | Pushes a false value onto the stack.                                 |
+| True                  | 82  | -                         | Pushes a true value onto the stack.                                  |
+| ForIter               | 90  | jump_ofs, name_count      | Advances to the next iteration of a loop.                            |
+| GetIter               | 91  | -                         | Pushes an iterator for the TOS iterable.                             |
+| Range                 | 92  | -                         | Pushes an iterator for the TOS iterable.                             |
+| FromImport            | 100 | parent_len, name_count    | Imports a specific symbol from a module, with names on the stack.    |
+| Import                | 101 | -                         | Imports a module, where TOS=name.                                    |
+| Receive               | 110 | -                         | Receives a value from a channel, where TOS=channel.                  |
+| Send                  | 111 | -                         | Sends a value to a channel, where TOS=value, TOS1=channel.           |
+| LoadClosure           | 120 | const_index, free_count   | Pushes a new closure onto the stack.                                 |
+| MakeCell              | 121 | symbol_index, frames_back | Captures a variable from a frame and pushes it onto the stack.       |
+| Partial               | 130 | argc                      | Pushes a partial function, where the args and func are on the stack. |
+
+
+## CPython's Evolving Bytecode
+
+I was somewhat surprised to learn that CPython's bytecode undergoes a constant
+evolution. There isn't a promise that bytecode from one version continues to
+work in the next version. Python `.pyc` files include a 4 byte magic number that
+are associated with the marshalling code, and Python will recompile the `.pyc`
+if the magic number no longer matches the running version of Python.
+
+## The Risor VM as a Platform
+
+While not yet set in stone, my intent with Risor is that the bytecode will remain
+stable within each major version. The plan would be to add opcodes as needed for
+new features, while retaining the behavior of existing opcodes.
+
+This approach for compatibility would even accommodate using Risor's VM as a
+platform for other languages, which is intriguing. It could be a JVM but for
+the Go ecosystem.
+
+## Conclusion
+
+Thanks for reading! I hope you find Risor's VM and opcodes interesting. It'd be
+great to hear your thoughts and feedback. Please drop in on the
+[GitHub discussions](https://github.com/risor-io/risor/discussions) or join the
+`#risor` channel on the [Gophers Slack](https://gophers.slack.com/).
+
+If you're new to Risor, the quickest way to install it is using Homebrew:
+
+```
+brew install risor
+```
+
+See you around 👋
