@@ -5,7 +5,12 @@ import { DocsThemeConfig } from 'nextra-theme-docs';
 import EditLink from './components/edit-link';
 
 const config: DocsThemeConfig = {
-  logo: <strong>Risor.io</strong>,
+  logo: (
+    <>
+      <img src='/risor-icon.svg' width='48' height='48' alt='Risor Logo' />
+      <span style={{ marginLeft: '-0.3em', fontWeight: 800 }}>Risor</span>
+    </>
+  ),
   project: {
     link: 'https://github.com/risor-io/risor',
   },
