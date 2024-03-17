@@ -2,6 +2,9 @@
   "index": {
     "title": "Getting Started"
   },
+  "syntax": {
+    "title": "Syntax"
+  },
   "builtins": {
     "title": "Builtins"
   },
