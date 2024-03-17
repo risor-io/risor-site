@@ -1,5 +1,6 @@
 import React from 'react';
 import { useRouter } from 'next/router';
+import { useConfig } from 'nextra-theme-docs';
 import { DocsThemeConfig } from 'nextra-theme-docs';
 import EditLink from './components/edit-link';
 
@@ -55,16 +56,28 @@ const config: DocsThemeConfig = {
     autoCollapse: true,
     defaultMenuCollapseLevel: 1,
   },
-  head: (
-    <>
-      <meta name='viewport' content='width=device-width, initial-scale=1.0' />
-      <meta property='og:title' content='Risor' />
-      <meta
-        property='og:description'
-        content='Fast and flexible scripting for Go developers and DevOps.'
-      />
-    </>
-  ),
+  head: () => {
+    const { asPath, defaultLocale, locale } = useRouter();
+    const { frontMatter } = useConfig();
+    const url =
+      'https://risor.io' +
+      (defaultLocale === locale ? asPath : `/${locale}${asPath}`);
+    return (
+      <>
+        <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+        <meta property='og:url' content={url} />
+        <link rel='icon' type='image/x-icon' href='/risor-icon.svg' />
+        <meta property='og:title' content={frontMatter.title || 'Risor'} />
+        <meta
+          property='og:description'
+          content={
+            frontMatter.description ||
+            'Fast and flexible scripting for Go developers and DevOps.'
+          }
+        />
+      </>
+    );
+  },
 };
 
 export default config;

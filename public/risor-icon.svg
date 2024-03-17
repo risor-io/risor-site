@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 2000 2000">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: url(#linear-gradient-2);
+      }
+
+      .cls-2 {
+        fill: url(#linear-gradient-3);
+      }
+
+      .cls-3 {
+        fill: url(#linear-gradient);
+      }
+    </style>
+    <linearGradient id="linear-gradient" x1="211.38" y1="-582.53" x2="2283.71" y2="1667.64" gradientUnits="userSpaceOnUse">
+      <stop offset=".11" stop-color="#f2d7ff"/>
+      <stop offset=".2" stop-color="#eed1fd"/>
+      <stop offset=".31" stop-color="#e4c1f9"/>
+      <stop offset=".44" stop-color="#d4a7f3"/>
+      <stop offset=".58" stop-color="#be83ea"/>
+      <stop offset=".61" stop-color="#ba7ce9"/>
+      <stop offset="1" stop-color="#1b0977"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-2" x1="-60.4" y1="-332.23" x2="2011.92" y2="1917.94" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f2d7ff"/>
+      <stop offset=".1" stop-color="#eed1fd"/>
+      <stop offset=".23" stop-color="#e4c1f9"/>
+      <stop offset=".37" stop-color="#d4a7f3"/>
+      <stop offset=".53" stop-color="#be83ea"/>
+      <stop offset=".55" stop-color="#ba7ce9"/>
+      <stop offset="1" stop-color="#1b0977"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-3" x1="-241.66" y1="-165.3" x2="1830.67" y2="2084.87" gradientUnits="userSpaceOnUse">
+      <stop offset=".1" stop-color="#f2d7ff"/>
+      <stop offset=".18" stop-color="#eed1fd"/>
+      <stop offset=".29" stop-color="#e4c1f9"/>
+      <stop offset=".4" stop-color="#d4a7f3"/>
+      <stop offset=".53" stop-color="#be83ea"/>
+      <stop offset=".55" stop-color="#ba7ce9"/>
+      <stop offset=".8" stop-color="#1b0977"/>
+    </linearGradient>
+  </defs>
+  <polygon class="cls-3" points="884.55 682.75 712.78 385.21 1594.74 385.21 1766.51 682.75 884.55 682.75"/>
+  <polygon class="cls-1" points="956.33 1616.36 1421.46 806.76 1766.41 806.76 1301.28 1616.36 956.33 1616.36"/>
+  <polygon class="cls-2" points="704.88 1203.91 233.49 383.64 578.35 383.64 1049.84 1203.91 704.88 1203.91"/>
+</svg>
