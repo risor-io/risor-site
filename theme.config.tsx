@@ -2,9 +2,10 @@ import React from 'react';
 import { useRouter } from 'next/router';
 import { DocsThemeConfig } from 'nextra-theme-docs';
 import EditLink from './components/edit-link';
+import Logo from './components/logo';
 
 const config: DocsThemeConfig = {
-  logo: <strong>Risor.io</strong>,
+  logo: <Logo></Logo>,
   project: {
     link: 'https://github.com/risor-io/risor',
   },
