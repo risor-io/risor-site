@@ -19,5 +19,8 @@
   },
   "use_cases": {
     "title": "Use Cases"
+  },
+  "comparisons": {
+    "title": "Comparisons with Go"
   }
 }

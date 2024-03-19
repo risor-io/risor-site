@@ -1,0 +1,85 @@
+---
+title: String Operations
+description: Describes various ways to work with strings in Golang, including
+  building multi-line strings, reading and writing files, and printing Go structs.
+---
+
+## Golang String Operations
+
+Go provides a rich set of functiontionality for working with strings. This guide
+covers various ways to define and operate on strings in Go, including building
+multi-line strings, reading and writing text files, and printing Go structs.
+
+### Defining Multiline Strings
+
+The preferred way to write a string that spans multiple lines is to use
+a raw string literal, which is enclosed by backticks. Raw string literals
+preserve the newlines and any other special characters within the string.
+All whitespace is also preserved as-is, so pay attention to indentation!
+
+```go copy filename="main.go"
+package main
+
+import "fmt"
+
+func main() {
+	s := `This is a
+multiline
+string`
+	fmt.Println(s)
+}
+```
+
+```plaintext filename="stdout"
+This is a
+multiline
+string
+```
+
+Try this in the Go playground [here](https://go.dev/play/p/WZK8G1V6PvM).
+
+### Reading and Writing Files
+
+Go provides a simple way to read and write entire files using the
+[os.ReadFile](https://pkg.go.dev/os#ReadFile) and [os.WriteFile](https://pkg.go.dev/os#WriteFile)
+functions. These functions work with byte slices, so you'll need to convert the
+data to and from strings when working with text files.
+
+These functions were added to Go in version 1.16, obsoleting the `ioutil.ReadFile`
+and `ioutil.WriteFile` functions that were previously used for this purpose.
+
+Because these functions read and write entire files at once, they are not suitable
+for very large files. For those cases, you should use the `os.Open` and `os.Create`
+functions instead to work with the data in smaller chunks.
+
+The following example writes a string to a file and then reads it back.
+
+```go copy filename="main.go"
+package main
+
+import (
+	"fmt"
+	"os"
+)
+
+func main() {
+	// Write a file
+	err := os.WriteFile("test.txt", []byte("Don't Panic."), 0644)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// Read a file
+	data, err := os.ReadFile("test.txt")
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(string(data))
+}
+```
+
+```plaintext filename="stdout"
+Don't Panic.
+```
+
+Try this in the Go playground [here](https://go.dev/play/p/MLMVi9uz0SP).

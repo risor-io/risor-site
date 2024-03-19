@@ -1,0 +1,293 @@
+---
+title: String Concatenation
+description: Describes multiple approaches to string concatenation in Golang. This
+    includes using the `+` operator, `+=`, `fmt.Sprintf`, `strings.Join`,
+    `bytes.Buffer`, and `strings.Builder`.
+---
+
+## Concatenating Strings in Go
+
+Here are a few ways to combine or concatenate multiple strings in Go. Keep in
+mind that an existing string can't be changed, that is, strings are immutable.
+Instead, each string operation returns a new string. As a result, some ways of
+working will be much more efficient than others when performing a large number
+of string operations.
+
+### Using the `+` Operator
+
+In Go, the `+` operator is the simplest way to concatenate a small number of strings.
+In the example below, the concatenation of the two strings `s1` and `s2` and a space
+in between is stored in `result` and then printed.
+
+```go copy filename="main.go"
+package main
+
+import "fmt"
+
+func main() {
+	s1 := "thanks"
+	s2 := "for all the fish"
+	result := s1 + " " + s2
+	fmt.Println(result)
+}
+```
+
+```plaintext filename="output"
+thanks for all the fish
+```
+
+Try this in the Go playground [here](https://go.dev/play/p/h5cbOhW1st6).
+
+### Using `+=`
+
+The `+=` operator is similar, but is used to append a string to the end of an
+existing string. In this example, the `+=` operator is used to update the `s1`
+variable to build the string "hello, world!".
+
+```go copy filename="main.go"
+package main
+
+import "fmt"
+
+func main() {
+	s1 := "hello"
+	s2 := "world"
+	s1 += ", " + s2 + "!"
+	fmt.Println(s1)
+}
+```
+
+```plaintext filename="output"
+hello, world!
+```
+
+Try this in the Go playground [here](https://go.dev/play/p/fTSgpcUj6YT).
+
+### Using `fmt.Sprintf`
+
+Now we'll move on to a more powerful way of working with strings:
+[fmt.Sprintf](https://pkg.go.dev/fmt#Sprintf). Use this function to format and
+build a string from multiple fragments. Formatting "verbs" are prefixed with `%`
+and are placeholders for the values that will be inserted into the string. The
+`fmt.Sprintf` function returns a new string. The `%s` verb simply inserts a
+string value into the result.
+
+```go copy filename="main.go"
+package main
+
+import "fmt"
+
+func main() {
+	name := "John"
+	age := 22
+	result := fmt.Sprintf("%s is %d years old", name, age)
+	fmt.Println(result)
+}
+```
+
+```plaintext filename="output"
+John is 22 years old
+```
+
+Refer to the [fmt package documentation](https://pkg.go.dev/fmt) for more
+information on the other formatting verbs. This also provides a way to justify
+text, adjust precision on floating point numbers, and more.
+
+Try this in the Go playground [here](https://go.dev/play/p/jP-U1oUb9D1).
+
+### Using `strings.Join`
+
+Use [strings.Join](https://pkg.go.dev/strings#Join) to build a string from a
+slice of input strings, with a given separator. This function is more efficient
+than using `+` or `+=` because it avoids creating intermediate strings. In the
+example below, a sentence is built from a slice of words by using a space as the
+separator.
+
+```go copy filename="main.go"
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+func main() {
+	words := []string{"words", "to", "live", "by"}
+	result := strings.Join(words, " ")
+	fmt.Println(result)
+}
+```
+
+```plaintext filename="output"
+words to live by
+```
+
+Try this in the Go playground [here](https://go.dev/play/p/9uVxcNgWpQm).
+
+### Using `bytes.Buffer`
+
+The [bytes.Buffer](https://pkg.go.dev/bytes#Buffer) type is useful for building
+a string with repeated writes. Like `strings.Join`, this has the advantage of
+being efficient by avoiding intermediate string allocations. It also allows for
+conditionally adding strings or using a loop during the building process. Use
+the buffer's `String()` method to get the final result.
+
+```go copy filename="main.go"
+package main
+
+import (
+	"bytes"
+	"fmt"
+)
+
+func main() {
+	var buffer bytes.Buffer
+	buffer.WriteString("with")
+	buffer.WriteString(" ")
+	buffer.WriteString("great")
+	buffer.WriteString(" ")
+	buffer.WriteString("power")
+	result := buffer.String()
+	fmt.Println(result)
+}
+```
+
+```plaintext filename="output"
+with great power
+```
+
+If you are purely dealing with strings and don't need to operate on individual
+bytes, prefer using the `strings.Builder` type which is discussed next.
+
+Try this in the Go playground [here](https://go.dev/play/p/oX2p4Zd1ZNm).
+
+### Using `strings.Builder`
+
+The [strings.Builder](https://pkg.go.dev/strings#Builder) type is similar to
+`bytes.Buffer` but is optimized for string operations. This approach is also
+very efficient since it avoids intermediate string allocations. It has an
+internal buffer that grows as needed. It is ideal for building a dynamically
+while using a loop or conditionally adding strings. Use the builder's `String()`
+method to get the final result.
+
+```go copy filename="main.go"
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+func main() {
+	var builder strings.Builder
+	builder.WriteString("the")
+	builder.WriteString(" ")
+	builder.WriteString("quick")
+	builder.WriteString(" ")
+	builder.WriteString("brown")
+	builder.WriteString(" ")
+	builder.WriteString("fox")
+	result := builder.String()
+	fmt.Println(result)
+}
+```
+
+```plaintext filename="output"
+the quick brown fox
+```
+
+Try this in the Go playground [here](https://go.dev/play/p/4y5XroSlCX5).
+
+## Concatenating Strings in Risor
+
+Generally speaking, Risor supports the same approaches for concatenating strings
+as Go. Risor wraps the corresponding Go functionality, so the same performance
+characteristics apply. In Risor, you don't need to import any packages or
+define a `main` function. You can simply run the code in a `.risor` file.
+
+### Using the `+` Operator
+
+The `+` operator behaves identically in Risor as it does in Go, and is an easy
+way to combine strings:
+
+```risor copy filename="example.risor"
+s1 := "thanks"
+s2 := "for all the fish"
+result := s1 + " " + s2
+print(result)
+```
+
+```plaintext filename="output"
+thanks for all the fish
+```
+
+With the `risor` CLI installed (**brew install risor**), you can run this example
+with the command:
+
+```bash
+risor ./example.risor
+```
+
+### Using `+=`
+
+Similarly, the `+=` operator is used to append a string to the end of an existing
+string in Risor:
+
+```risor copy filename="example.risor"
+s1 := "hello"
+s2 := "world"
+s1 += ", " + s2 + "!"
+print(s1)
+```
+
+```plaintext filename="output"
+hello, world!
+```
+
+### Using `sprintf`
+
+Risor has a built-in `sprintf` function that is equivalent to Go's `fmt.Sprintf`:
+
+```risor copy filename="example.risor"
+name := "John"
+age := 22
+result := sprintf("%s is %d years old", name, age)
+print(result)
+```
+
+```plaintext filename="output"
+John is 22 years old
+```
+
+### Using `strings.join`
+
+Join a list of strings with a separator using the `strings.join` function. The
+`strings` module is available by default in Risor, as are several other of the
+most commonly used modules.
+
+```risor copy filename="example.risor"
+words := ["words", "to", "live", "by"]
+result := strings.join(words, " ")
+print(result)
+```
+
+```plaintext filename="output"
+words to live by
+```
+
+### Using Templated Strings
+
+Risor supports string templates, which are a lot like f-strings in Python and
+template literals in JavaScript. Use strings with single quotes and `{}` syntax
+to insert variables into the string.
+
+```risor copy filename="example.risor"
+name := "John"
+age := 22
+result := '{name} is {age} years old'
+print(result)
+```
+
+```plaintext filename="output"
+John is 22 years old
+```
