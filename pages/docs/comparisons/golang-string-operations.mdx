@@ -1,6 +1,6 @@
 ---
 title: String Operations
-description: Describes various ways to work with strings in Golang, including
+description: Describes various ways to work with strings in Go and Risor, including
   building multi-line strings, reading and writing files, and printing Go structs.
 ---
 
@@ -83,3 +83,88 @@ Don't Panic.
 ```
 
 Try this in the Go playground [here](https://go.dev/play/p/MLMVi9uz0SP).
+
+### String Manipulation Functions
+
+Go's standard library includes the `strings` package, which is packed with
+useful string manipulation utilities. Here are some of the most commonly used functions:
+
+- `strings.Contains(s, substr)`: Returns true if the string `s` contains the substring `substr`.
+- `strings.Split(s, sep)`: Splits the string `s` into a slice of substrings separated by the separator `sep`.
+- `strings.Join(slice, sep)`: Concatenates the items in a slice into a single string using the separator `sep`.
+- `strings.Trim(s, cutset)`: Removes all leading and trailing characters contained in `cutset` from `s`.
+- `strings.ReplaceAll(s, old, new)`: Replaces all occurrences of `old` in `s` with `new`.
+
+Here are some examples of using these functions:
+
+```go copy filename="main.go"
+package main
+
+import (
+	"fmt"
+	"strings"
+)
+
+func main() {
+	// Contains
+	fmt.Println(strings.Contains("hello world", "world")) // true
+
+	// Split
+	parts := strings.Split("hello,world,go", ",")
+	fmt.Println(parts) // [hello world go]
+
+	// Join
+	joined := strings.Join(parts, "-")
+	fmt.Println(joined) // hello-world-go
+
+	// Trim
+	trimmed := strings.Trim("Hello, World!", "!")
+	fmt.Println(trimmed) // Hello, World
+
+	// Replace
+	replaced := strings.ReplaceAll("hello world", "world", "gopher")
+	fmt.Println(replaced) // hello gopher
+}
+```
+
+Try this in the Go playground [here](https://go.dev/play/p/O9OjKRc200O).
+
+### Printing Go Structs
+
+Go provides a convenient way to print structs using the `%+v` format verb with
+the `fmt.Printf` function. This verb prints the struct's field names and values.
+It's a useful tool for debugging or inspecting the contents of a struct.
+
+```go copy filename="main.go"
+package main
+
+import "fmt"
+
+type Person struct {
+    Name   string
+    Age    int
+    Email  string
+}
+
+func main() {
+    p := Person{
+        Name:  "John Doe",
+        Age:   30,
+        Email: "john@example.com",
+    }
+
+    fmt.Printf("%+v\n", p)
+}
+```
+
+```plaintext filename="stdout"
+{Name:John Doe Age:30 Email:john@example.com}
+```
+
+Try this in the Go playground [here](https://go.dev/play/p/URGekCy-Gma).
+
+### Additional Resources
+
+- [Go Strings Package Documentation](https://pkg.go.dev/strings)
+- [Go String Tutorial](https://golangbot.com/strings/)
+- [Go String Formatting](https://gobyexample.com/string-formatting)

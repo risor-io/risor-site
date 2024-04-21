@@ -20,7 +20,7 @@ const config: DocsThemeConfig = {
     const { asPath } = useRouter();
     if (asPath !== '/' && asPath !== '') {
       return {
-        titleTemplate: '%s - Risor',
+        titleTemplate: '%s',
       };
     } else {
       return {
