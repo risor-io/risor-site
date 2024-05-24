@@ -5,11 +5,20 @@
   "base64": {
     "title": "base64"
   },
+  "bcrypt": {
+    "title": "bcrypt"
+  },
   "bytes": {
     "title": "bytes"
   },
+  "carbon": {
+    "title": "carbon"
+  },
   "cli": {
     "title": "cli"
+  },
+  "color": {
+    "title": "color"
   },
   "exec": {
     "title": "exec"
@@ -29,6 +38,9 @@
   "image": {
     "title": "image"
   },
+  "isatty": {
+    "title": "isatty"
+  },
   "jmespath": {
     "title": "jmespath"
   },
@@ -40,6 +52,9 @@
   },
   "math": {
     "title": "math"
+  },
+  "net": {
+    "title": "net"
   },
   "os": {
     "title": "os"
@@ -53,6 +68,9 @@
   "regexp": {
     "title": "regexp"
   },
+  "semver": {
+    "title": "semver"
+  },
   "sql": {
     "title": "sql"
   },
@@ -61,6 +79,9 @@
   },
   "strings": {
     "title": "strings"
+  },
+  "tablewriter": {
+    "title": "tablewriter"
   },
   "template": {
     "title": "template"
