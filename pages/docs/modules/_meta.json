@@ -20,6 +20,9 @@
   "color": {
     "title": "color"
   },
+  "errors": {
+    "title": "errors"
+  },
   "exec": {
     "title": "exec"
   },
@@ -67,6 +70,9 @@
   },
   "regexp": {
     "title": "regexp"
+  },
+  "sched": {
+    "title": "sched"
   },
   "semver": {
     "title": "semver"

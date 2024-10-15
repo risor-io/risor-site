@@ -1,122 +1,142 @@
+import { Callout } from 'nextra/components';
+
 # semver
 
-The `semver` module provides functions to work with semantic version strings.
-
-Semantic version strings are in the form:
-
-```
-vMAJOR[.MINOR[.PATCH[-PRERELEASE][+BUILD]]]
-```
-
-The square brackets indicate optional fields with the string.
-
-The MAJOR, MINOR, and PATCH strings must be decimal integers without leading zeros.
-The PRERELEASE and BUILD strings may contain alphanumeric identifiers and hyphens.
-If the PRERELEASE string is numeric, it must not have leading zeros.
-
-This implementation matches [Semver version 2](https://semver.org/) with two
-exceptions:
-
-1. The version string must begin with a leading "v".
-2. The MINOR and PATCH fields are optional and default to 0 if not specified.
-
-The core functionality is provided by
-[golang.org/x/mod/semver](https://pkg.go.dev/golang.org/x/mod/semver).
+<Callout type="info" emoji="ℹ️">
+  This module requires that Risor has been compiled with the `semver` Go build tag.
+  When compiling **manually**, [make sure you specify `-tags semver`](https://github.com/risor-io/risor#build-and-install-the-cli-from-source).
+</Callout>
 
 ## Functions
-
-### build
-
-```go filename="Function signature"
-build(v string) string
-```
-
-Returns the build metadata of the specified version string.
-
-```go filename="Example"
->>> semver.build("v1.2.3+build234")
-"+build234"
-```
-
-### canonical
-
-```go filename="Function signature"
-canonical(v string) string
-```
-
-Returns the canonical formatting of the semantic version string. The function
-fills in any missing minor or patch fields with zeros and removes any build
-metadata.
-
-```go filename="Example"
->>> semver.canonical("v1")
-"v1.0.0"
-```
 
 ### compare
 
 ```go filename="Function signature"
-compare(v1, v2 string) int
+compare(v1 int, v2 int) int
 ```
 
-Compares two version strings and returns -1, 0, or 1 if `v1` is less than, equal
-to, or greater than `v2`, respectively.
+Compares v1 and v2. Returns -1 if v1 is less than v2, 0 if both are equal, 1 if v1 is greater than v2.
 
-```go filename="Example"
->>> semver.compare("v1.2.3", "v1.2.4")
+```go copy filename="Example"
+>>> import semver
+>>> semver.compare("1.2.3", "1.2.4")
 -1
-```
-
-### is_valid
-
-```go filename="Function signature"
-is_valid(v string) bool
-```
-
-Returns true if the specified version string is a valid semantic version.
-
-```go filename="Example"
->>> semver.is_valid("v1.2.3")
-true
->>> semver.is_valid("3")
-false
 ```
 
 ### major
 
 ```go filename="Function signature"
-major(v string) string
+major(version string) int
 ```
 
-Returns the major version of the specified version string.
+Returns the major version of the given version string.
 
-```go filename="Example"
->>> semver.major("v1.2.3")
-"v1"
+```go copy filename="Example"
+>>> import semver
+>>> semver.major("1.2.3")
+1
 ```
 
-### major_minor
+### minor
 
 ```go filename="Function signature"
-major_minor(v string) string
+minor(version string) int
 ```
 
-Returns the major and minor version of the specified version string.
+Returns the minor version of the given version string.
 
-```go filename="Example"
->>> semver.major_minor("v1.2.3")
-"v1.2"
+```go copy filename="Example"
+>>> import semver
+>>> semver.minor("1.2.3")
+2
 ```
 
-### prerelease
+### patch
 
 ```go filename="Function signature"
-prerelease(v string) string
+patch(version string) int
 ```
 
-Returns the prerelease information of the specified version string.
+Returns the patch version of the given version string.
 
-```go filename="Example"
->>> semver.prerelease("v1.2.3-alpha")
-"alpha"
+```go copy filename="Example"
+>>> import semver
+>>> semver.patch("1.2.3")
+3
+```
+
+### build
+
+```go filename="Function signature"
+build(version string) string
+```
+
+Returns the build version of the given version string.
+
+```go copy filename="Example"
+>>> import semver
+>>> semver.build("1.2.3+build")
+"build"
+```
+
+### pre
+
+```go filename="Function signature"
+pre(version string) string
+```
+
+Pre returns the pre-release version of the given version string.
+
+```go copy filename="Example"
+>>> import semver
+>>> semver.pre("1.2.3-pre")
+"pre"
+```
+
+### validate
+
+```go filename="Function signature"
+validate(version string) bool
+```
+
+Returns an error if the version isn't valid.
+
+```go copy filename="Example"
+>>> import semver
+>>> semver.validate("1.2.3invalid")
+Invalid character(s) found in patch number "3invalid"
+```
+
+### parse
+
+```go filename="Function signature"
+parse(version string) map
+```
+
+Parses the given version string and returns a map with the major, minor, patch, pre-release, and build versions.
+
+```go copy filename="Example"
+>>> import semver
+>>> semver.parse("1.2.3-pre+build")
+{
+  "major": 1,
+  "minor": 2,
+  "patch": 3,
+  "pre": "pre",
+  "build": "build"
+}
+```
+
+### equals
+
+```go filename="Function signature"
+equals(v1 string, v2 string) bool
+```
+
+Returns whether v1 and v2 are equal.
+
+```go copy filename="Example"
+>>> import semver
+>>> semver.equals("1.2.3", "1.2.3")
+true
 ```
