@@ -182,29 +182,7 @@ for i := 0; i < 10; i++ {
 }
 ```
 
-### Concurrency
-
-Risor leverages Go's concurrency primitives and supports spawning goroutines and
-communicating via channels. Channels can be used to send any Risor object type.
-
-```risor copy
-func work(count) {
-    mychan := chan(5)
-    go func() {
-        for i := 0; i < count; i++ {
-            mychan <- rand.float()
-        }
-        close(mychan)
-    }()
-    return mychan
-}
-
-for i, value := range work(5) {
-    print(i, value)
-}
-```
-
-### Error Handling
+### Errors
 
 Risor errors are similar to exceptions in languages like Python and Javascript.
 This makes Risor more concise and suitable for scripts, as compared to Go. A
@@ -228,6 +206,9 @@ func divide(a, b) {
     return a / b
 }
 ```
+
+Also see the [Try-Catch Error Handling](syntax#try-catch-error-handling) section
+for more information.
 
 ### Pipe Expressions
 
@@ -329,3 +310,115 @@ defined using `/*` and `*/`.
 This is a multiline comment
 */
 ```
+
+### Channels
+
+Risor supports Go-style channels for concurrent communication:
+
+```risor copy
+// Create a buffered channel with capacity 1
+c := chan(1)
+
+// Send a value to the channel
+c <- "hello"
+
+// Receive a value from the channel
+x := <-c
+
+// Close a channel
+close(c)
+```
+
+Risor channels behave like Go channels in many ways, however they support sending
+and receiving any Risor object type. Also when ranging over a channel, in Risor
+you receive both the index and value of the current item.
+
+```risor copy
+func work(count) {
+    mychan := chan(5)
+    go func() {
+        for i := 0; i < count; i++ {
+            mychan <- rand.float()
+        }
+        close(mychan)
+    }()
+    return mychan
+}
+
+// Different from Go: ranging over a channel yields both the index and value
+for i, value := range work(5) {
+    print(i, value)
+}
+```
+
+### Goroutines
+
+Risor supports launching goroutines using the `go` keyword:
+
+```risor copy
+// Launch a goroutine
+go func() {
+    // Do some work
+}()
+
+// Use a channel for communication
+c := chan(1)
+go func() {
+    c <- 42
+}()
+x := <-c
+```
+
+### Spawn
+
+The `spawn` function spawns a new goroutine and returns a `thread` object. The
+thread object can be used to wait for the goroutine to finish and retrieve its
+return value.
+
+```risor copy
+// Spawn a function and wait for its result
+result := spawn(func(x) { return x * 2 }, 21).wait()
+print(result)  // 42
+
+// Spawn multiple functions
+threads := []
+for i := 0; i < 5; i++ {
+    threads.append(spawn(func(x) { return x ** 2 }, i))
+}
+results := threads.map(func(t) { t.wait() })
+print(results)  // [0, 1, 4, 9, 16]
+```
+
+### Defer
+
+The `defer` statement allows you to schedule a function call to be run after the
+current function completes:
+
+```risor copy
+func example() {
+    defer print("This will be printed last")
+    print("This will be printed first")
+}
+
+example()
+```
+
+### Try-Catch Error Handling
+
+Risor provides a `try` function for error handling:
+
+```risor copy
+result := try(
+    func() {
+        // Code that might raise an error
+        error("Something went wrong")
+    },
+    func(err) {
+        // Error handler
+        print("Caught error:", err)
+        return "fallback value"
+    }
+)
+```
+
+See the [try](builtins#try) built-in for more information.
