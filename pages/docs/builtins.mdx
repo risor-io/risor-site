@@ -197,6 +197,27 @@ Changes the current working directory to the given path.
 "/tmp"
 ```
 
+### chan
+
+```go filename="Function signature"
+chan(capacity int = 0) chan
+```
+
+Creates a new channel with the given capacity. If unspecified, the capacity
+defaults to 0. Channels are used to send and receive Risor objects between
+goroutines. The underlying Go equivalent is `chan object.Object`. This means
+any Risor object can be sent and received over a channel. Currently the Risor
+`select` statement does not support channels, however it may in the future.
+
+```risor copy filename="Example"
+>>> c := chan(8)
+>>> c <- "test"
+>>> <-c
+"test"
+```
+
+_New in Risor v1.4.0_.
+
 ### chr
 
 ```go filename="Function signature"
@@ -211,6 +232,65 @@ The `ord` built-in performs the inverse transformation.
 "€"
 >>> chr(97)
 "a"
+```
+
+### chunk
+
+```go filename="Function signature"
+chunk(container, size int) list
+```
+
+Returns a list of chunks of the given container, where each chunk is a list of
+the given size. If the container is not evenly divisible by the size, the last
+chunk will contain the remaining elements.
+
+```go copy filename="Example"
+>>> chunk([1, 2, 3, 4, 5], 2)
+[[1, 2], [3, 4], [5]]
+>>> chunk([1, 2, 3, 4, 5], 3)
+[[1, 2, 3], [4, 5]]
+>>> chunk([1, 2, 3, 4, 5], 4)
+[[1, 2, 3, 4], [5]]
+>>> chunk([1, 2, 3, 4, 5], 5)
+[[1, 2, 3, 4, 5]]
+```
+
+### close
+
+```go filename="Function signature"
+close(channel)
+```
+
+Closes the given channel. This directly corresponds to the Go `close` function.
+If called on an already closed channel, an error is raised.
+
+```risor copy filename="Example"
+c := chan()
+
+go func() {
+    c <- 42
+    close(c)
+}()
+
+for _, v := range c {
+    print(v)
+}
+```
+
+### coalesce
+
+```go filename="Function signature"
+coalesce(...objects) object
+```
+
+Returns the first non-nil object in the given list of arguments. If no
+arguments are provided, or all arguments are `nil`, the result is `nil`.
+
+```risor copy filename="Example"
+>>> coalesce(nil, 1, 2, 3)
+1
+>>> coalesce(nil, nil, nil) # returns nil
+>>> coalesce()              # returns nil
 ```
 
 ### cp
@@ -237,6 +317,7 @@ that may be one of the following values:
 
 - `base64`
 - `base32`
+- `gzip`
 - `hex`
 - `json`
 - `csv`
@@ -282,6 +363,7 @@ that may be one of the following values:
 
 - `base64`
 - `base32`
+- `gzip`
 - `hex`
 - `json`
 - `csv`
@@ -304,6 +386,8 @@ different types.
   Additional codecs may be registered by calling the Go function
   `builtins.RegisterCodec`
 </Callout>
+
+_gzip encoding added in Risor v1.5.0_.
 
 ### error
 
@@ -465,6 +549,25 @@ fails.
 123
 ```
 
+### is_hashable
+
+```go filename="Function signature"
+is_hashable(object) bool
+```
+
+Returns `true` if the object is hashable, otherwise returns `false`. A Risor
+object is hashable if it implements the `object.Hashable` interface, which is
+defined in [this file](https://github.com/risor-io/risor/blob/main/object/object.go).
+
+Hashable objects may be stored as elements of a Risor set.
+
+```go copy filename="Example"
+>>> is_hashable("abc")
+true
+>>> is_hashable([1, 2, 3])
+false
+```
+
 ### iter
 
 ```go filename="Function signature"
@@ -596,6 +699,34 @@ object for each file or directory in the specified directory.
 >>> ls("logs")
 [dir_entry(name=logs.txt, type=regular)]
 ```
+
+### make
+
+```go filename="Function signature"
+make(object object, capacity int = 0) object
+```
+
+Most Risor programs do not need to use `make` explicitly, however it can be
+useful when you would like to specify the underlying capacity of a container.
+This wraps the Go `make` function.
+
+The `object` argument must be one of the following:
+
+- a `list`, `map`, or `set` object.
+- a built-in function, one of: `chan`, `list`, `map`, or `set`.
+
+This object is only used to signal which type of object is being created. The
+capacity is specified by the `capacity` argument, which defaults to 0 if not
+provided.
+
+```risor copy filename="Example"
+>>> make(list, 10)
+[] # empty list, with underlying slice of capacity 10
+>>> make([], 10)
+[] # empty list, with underlying slice of capacity 10
+```
+
+_New in Risor v1.4.0_.
 
 ### map
 
@@ -741,6 +872,29 @@ Returns a sorted list of items from the given container object.
 >>> sorted([10, 3, -5])
 [-5, 3, 10]
 ```
+
+### spawn
+
+```go filename="Function signature"
+spawn(function, args ...object) thread
+```
+
+Spawns a new goroutine and executes the given function in that goroutine. The
+function is passed the remaining arguments. Returns a Risor thread object that
+can be used to wait for the goroutine to finish and retrieve its return value.
+
+```go copy filename="Example"
+>>> func addone(x) { return x + 1 }
+>>> t := spawn(addone, 1)
+>>> t.wait()
+2
+```
+
+When using Risor as a library, this level of concurrency is not available
+by default. To enable it, pass the `risor.WithConcurrency()` option when
+initializing a Risor VM.
+
+_New in Risor v1.4.0_.
 
 ### sprintf
 

@@ -1,35 +1,108 @@
+import { Callout } from 'nextra/components';
+
 # Executable Scripts
 
 Risor scripts can easily be made directly executable on MacOS and Linux.
 In the steps below, the Risor script filename is `myscript`. The full path
 to the script is `/path/to/myscript`.
 
-1\. Add a shebang line at the start of the Risor script:
+1\. Add this shebang line at the start of the Risor script:
 
+```risor copy filename="/path/to/myscript"
+#!/usr/bin/env risor --
 ```
-#!/usr/bin/env risor
-```
+
+<Callout type="info" emoji="ℹ️">
+  The `--` is required to pass any user-supplied the rest of the arguments to
+  the Risor script. This is essential if the script is meant to act as a CLI,
+  with its own set of flags and options.
+</Callout>
 
 2\. Allow execution as a program by using `chmod`:
 
-```
+```shell copy
 chmod +x /path/to/myscript
 ```
 
 3\. Optionally, update your `PATH` variable so that your shell can find the script:
 
-```
+```shell copy
 export PATH=/path/to/:$PATH
 ```
 
 Now you should be able to run `myscript` as a program from your shell.
-You should add the `export PATH` statement to `~/.bashrc` or `~/.zshrc` to persist the
-modified `PATH` variable for future sessions.
+You should add the `export PATH` statement to your shell's configuration file
+(e.g. `~/.bashrc` or `~/.zshrc`) to persist the modified `PATH` variable for
+future sessions.
 
-## Example Script
+## Minimal Example Script
 
-```shell copy filename="myscript"
-#!/usr/bin/env risor
+```risor copy filename="/path/to/myscript"
+#!/usr/bin/env risor --
 
-print("just a test")
+print("arguments:", os.args())
+```
+
+Example usage:
+
+```shell copy
+$ /path/to/myscript arg1 arg2 arg3
+arguments: ["/path/to/myscript", "arg1", "arg2", "arg3"]
+```
+
+## Executable CLI
+
+```risor copy filename="./fetch"
+#!/usr/bin/env risor --
+
+from cli import app, command, flag
+
+app({
+    name: "fetch",
+    description: "Fetch a URL and print the response",
+    flags: [
+        flag({
+            name: "verbose",
+            aliases: ["v"],
+            usage: "Print verbose output",
+            env_vars: ["VERBOSE"],
+            value: false,
+        }),
+    ],
+    action: func(ctx) {
+        args := ctx.args()
+        if len(args) == 0 {
+            error("expected a url")
+        }
+        response := fetch(args[0])
+        if ctx.bool("verbose") {
+            print("Status:", response.status)
+            print("Headers:", response.header)
+        }
+        print(response.json())
+    },
+}).run() // Run the app
+```
+
+Example usage:
+
+```shell copy
+$ ./fetch "http://worldtimeapi.org/api/timezone/America/New_York"
+{
+  "abbreviation": "EDT",
+  "client_ip": "173.79.135.113",
+  "datetime": "2024-10-15T22:32:09.565360-04:00",
+  "day_of_week": 2,
+  "day_of_year": 289,
+  "dst": true,
+  "dst_from": "2024-03-10T07:00:00+00:00",
+  "dst_offset": 3600,
+  "dst_until": "2024-11-03T06:00:00+00:00",
+  "raw_offset": -18000,
+  "timezone": "America/New_York",
+  "unixtime": 1729045929,
+  "utc_datetime": "2024-10-16T02:32:09.565360+00:00",
+  "utc_offset": "-04:00",
+  "week_number": 42
+}
 ```
