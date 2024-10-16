@@ -953,6 +953,20 @@ returned immediately. Otherwise, if all functions raise errors, `nil` is returne
 42
 ```
 
+If any function after the first accepts an argument, any error raised by the
+previous function is passed to the next function as its first argument.
+
+The example below prints `caught error: kaboom` and then returns the value 33.
+
+```risor copy filename="Example"
+try(func() {
+    error("kaboom")
+}, func(err) {
+    print("caught error:", err)
+    return 33
+})
+```
+
 ### type
 
 ```go filename="Function signature"
