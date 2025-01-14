@@ -155,6 +155,15 @@ for i, value := range array {
 }
 ```
 
+Iterating maps is supported as well.
+
+```risor copy
+m := {"hello": 42, "world": true}
+for key, val := range m {
+    print(key, val)
+}
+```
+
 ```risor copy
 for {
     print("infinite loop")
