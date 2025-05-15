@@ -48,6 +48,19 @@ Returns the absolute value of x.
 3.3
 ```
 
+### atan2
+
+```go filename="Function signature"
+atan2(y, x number) number
+```
+
+Returns the arc tangent value of y/x.
+
+```go copy filename="Example"
+>>> math.atan2(1, 2)
+0.4636476090008061
+```
+
 ### sqrt
 
 ```go filename="Function signature"
@@ -260,6 +273,19 @@ Returns 10 raised to the power of x.
 10
 >>> math.pow10(2)
 100
+```
+
+### inf
+
+```go filename="Function signature"
+inf(x number) float 
+```
+
+Inf returns positive infinity if sign >= 0, negative infinity if sign < 0. 
+
+```go copy filename="Example"
+>>> math.inf()
++Inf
 ```
 
 ### is_inf

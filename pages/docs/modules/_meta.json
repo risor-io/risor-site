@@ -11,9 +11,6 @@
   "bytes": {
     "title": "bytes"
   },
-  "carbon": {
-    "title": "carbon"
-  },
   "cli": {
     "title": "cli"
   },
@@ -34,6 +31,12 @@
   },
   "gha": {
     "title": "gha"
+  },
+  "goquery": {
+    "title": "goquery"
+  },
+  "htmltomarkdown": {
+    "title": "htmltomarkdown"
   },
   "http": {
     "title": "http"
@@ -65,6 +68,12 @@
   "pgx": {
     "title": "pgx"
   },
+  "playwright": {
+    "title": "playwright"
+  },
+  "qrcode": {
+    "title": "qrcode"
+  },
   "rand": {
     "title": "rand"
   },
@@ -76,6 +85,12 @@
   },
   "semver": {
     "title": "semver"
+  },
+  "shlex": {
+    "title": "shlex"
+  },
+  "slack": {
+    "title": "slack"
   },
   "sql": {
     "title": "sql"
