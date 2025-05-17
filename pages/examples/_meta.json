@@ -7,5 +7,6 @@
   "maps": "Working with Maps",
   "aws": "AWS SDK",
   "pgx": "PostgreSQL",
-  "fetch": "HTTP requests"
+  "fetch": "HTTP requests",
+  "concurrent_weather_dashboard": "Concurrent Weather Dashboard"
 }

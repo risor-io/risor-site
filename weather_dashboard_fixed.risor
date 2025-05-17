@@ -1,0 +1,93 @@
+// Weather dashboard script using the Open-Meteo API
+// Fetches weather data for multiple cities and displays a formatted table
+
+cities := [
+    {"name": "New York", "lat": 40.71, "lon": -74.01},
+    {"name": "London", "lat": 51.51, "lon": -0.13},
+    {"name": "Tokyo", "lat": 35.69, "lon": 139.69},
+    {"name": "Sydney", "lat": -33.87, "lon": 151.21},
+    {"name": "Paris", "lat": 48.85, "lon": 2.35}
+]
+
+func min(array) {
+    min := array[0]
+    for i := 1; i < len(array); i++ {
+        if array[i] < min {
+            min = array[i]
+        }
+    }
+    return min
+}
+
+func max(array) {
+    max := array[0]
+    for i := 1; i < len(array); i++ {
+        if array[i] > max {
+            max = array[i]
+        }
+    }
+    return max
+}
+
+func fetch_weather(city) {
+    base_url := "https://api.open-meteo.com/v1/forecast"
+    url := sprintf("%s?latitude=%.2f&longitude=%.2f&hourly=temperature_2m",
+        base_url, city.lat, city.lon)
+
+    print('Fetching data for {city.name}...')
+    data := fetch(url).json()
+
+    // Get current temperature (first hour in the forecast)
+    current_temp := data.hourly.temperature_2m[0]
+
+    // Calculate min/max temperature for the day (first 24 hours)
+    temps := data.hourly.temperature_2m[0:24]
+
+    return {
+        "city": city.name,
+        "temp": current_temp,
+        "min_temp": min(temps),
+        "max_temp": max(temps),
+        "timezone": data.timezone || "Unknown"
+    }
+}
+
+print('\n🌦️  Weather Dashboard 🌦️')
+
+start := time.now()
+
+results := []
+for _, city := range cities {
+    try(func() {
+        results.append(fetch_weather(city))
+    }, func(err) {
+        print('Error fetching data for {city.name}: {err}')
+    })
+}
+
+execution_time := time.since(start)
+
+// Sort results by city name
+results = sorted(results, func(a, b) { return a.city < b.city })
+
+// Rows array to be shown in the table
+table_rows := [["City", "Temp (°C)", "Min/Max (°C)", "Timezone"]]
+
+// Add a row for each result
+for _, r := range results {
+    min_max_str := sprintf("%.1f° / %.1f°", r.min_temp, r.max_temp)
+    table_rows.append([
+        r.city, 
+        sprintf("%.1f", r.temp), 
+        min_max_str,
+        r.timezone
+    ])
+}
+
+print()
+
+tablewriter(table_rows)
+
+print(sprintf("\nCompleted in %.2f seconds", execution_time))
+
+print("Data provided by Open-Meteo API - https://open-meteo.com")
