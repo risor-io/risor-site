@@ -1,0 +1,245 @@
+---
+image: https://github.com/risor-io/risor/raw/main/static/images/risor-logo-nopad.png
+description: 'Release v1.8.0: web crawling, scheduling, QR codes, and more'
+date: May 18th, 2025
+---
+
+# Risor v1.8.0 Release
+
+_Published May 18, 2025_
+
+I'm pleased to announce the v1.8.0 release of Risor, which adds a bevy of new
+modules and features to make your scripting easier, more fun, and perhaps
+weirder than ever.
+
+This is the first Risor release in 2025. Sorry about that. While I'd prefer the
+project have a more regular release cadence, this isn't my sole focus, so it is
+what it is. I count 44 pull requests merged since the last release, so it truly
+is a substantial body of work.
+
+A big shout out to my fellow contributors who authored multiple PRs:
+
+- [@rubiojr](https://github.com/rubiojr)
+- [@dnbsd](https://github.com/dnbsd)
+- [@saracen](https://github.com/saracen)
+
+Worth a quick call out: Risor is a community project with no commercial
+backing. It's contributions big and small that keep the project moving ~and
+keep my dreams alive~. Consider joining in if you find the project interesting!
+
+And eff why eye, I'm [@myzie](https://github.com/myzie) and I started this
+project back in 2022 as a way to learn more about interpreters. It's continued
+growing in fits and starts ever since.
+
+## Release Highlights
+
+Here's a ~quick~ taste of what's new in v1.8.0.
+
+### **Scheduled Tasks**
+
+The new `sched` module provides several ways to schedule both one-shot and
+recurring tasks. This lends itself to quickly spinning up a background service
+with minimal code.
+
+```risor copy
+sched.every("1m", func() { print("hello world!") })
+```
+
+### **Web Crawling**
+
+Several new modules provide tools for web crawling and content extraction:
+
+- `playwright` for browser automation
+- `goquery` for HTML parsing and DOM manipulation
+- `htmltomarkdown` for HTML to Markdown conversion
+
+For example, here's a one-liner using the Risor CLI to fetch a webpage
+and convert it to Markdown. I love this one. It captures the essence of what
+Risor is all about. Put some of the best tools available in the Go ecosystem
+to work for you in a single, concise command.
+
+```bash copy
+risor -c 'fetch("https://risor.io").text() | htmltomarkdown | print'
+```
+
+Install and launch Playwright and use it to read the Hacker News headlines:
+
+```go copy
+playwright.install()
+
+playwright.goto("https://news.ycombinator.com", func(page) {
+    entries := page.locator(".athing").all()
+    for i, entry := range entries {
+        title := entry.locator("td.title > span > a")
+        printf("%d: %s\n", i+1, title.text_content())
+    }
+})
+```
+
+In fitting with the Risor philosophy, all of these capabilities are baked right
+into the `risor` binary so you can just get to work. No fiddling with dependencies
+or fighting with package managers.
+
+### **Slack Client**
+
+This new module makes it incredibly simple to interact with Slack, including
+sending messages, querying conversations, uploading files, and more.
+
+```go copy
+client := slack.client(getenv("SLACK_TOKEN"))
+
+client.post_message("#project", {text: "Just a test"})
+
+client.upload_file("C12X73344SJ", {
+    title: "Example File",
+    filename: "example.txt",
+    content: "This is the file content",
+})
+```
+
+### **QR Codes**
+
+QR codes are now pretty mainstream. Turns out they can be easy to generate too.
+The Risor `qrcode` module gives you a one-liner to generate a standard QR code.
+It also allows for more customization of color, image patterns, and whatnot if
+you like being _fancy_ or _unique_.
+
+```go copy
+qrcode("https://risor.io").save("qrcode.png")
+```
+
+Now you too can avoid all those horrible ad-filled QR code generator websites.
+Or make one of your own, *high five*.
+
+### **Risor Code Assistant**
+
+This isn't technically _in_ the Risor release, but I'm calling it out anyways
+because it's a recent development and I think it's interesting. Basically, we
+are at a disadvantage by not being a mainstream language because ChatGPT and
+Claude know relatively little about Risor. Turns out, they actually _do_ know
+about it by now, but they don't know it well enough to be useful. So to make LLMs
+decent at writing Risor, you need to teach them.
+
+The [Risor Code Assistant (RCA)](https://github.com/rubiojr/rca) is a repository
+of context files that help LLMs write Risor effectively.
+
+### **SQL Querying Improvements**
+
+The first version of the Risor SQL module would read all rows into memory before
+returning them to the caller. This release adds an opt-in mode that allows for
+streaming query results and allows the caller to quit whenever. I know, it
+should've been this way from the start.
+
+```go copy
+db := sql.connect("sqlite://example.db", {"stream": true}) // <-- opt-in
+iterator := db.query("SELECT * FROM events ORDER BY created_at DESC")
+for _, row := range iterator {
+    print("event:", row.id, row.created_at, row.body)
+    if (row.id == 10) { break }
+}
+```
+
+Ok, everything can't be a highlight. Switching gears.
+
+## Modules
+
+A number of Risor modules were improved, with a general theme of giving Risor
+scripts access to more Go standard library functionality. The OS related changes
+go beyond that and are worth a quick call out. The idea with those is to more
+fully leverage Risor's ability to provide a mock or virtual operating system.
+This supports script sandboxing and using alternative stdin/stdout, among other
+things.
+
+- Added `add_date` method to the Time object for easier date manipulation ([#311](https://github.com/risor-io/risor/pull/311))
+- Added missing documentation for `math.inf` ([#361](https://github.com/risor-io/risor/pull/361))
+- Added `math.atan2` function ([#357](https://github.com/risor-io/risor/pull/357))
+- Added support for more CLI app attributes ([#326](https://github.com/risor-io/risor/pull/326))
+- Use the OS interface in the CLI module ([#299](https://github.com/risor-io/risor/pull/299))
+- Enhanced OS module with more user and group functionality ([#348](https://github.com/risor-io/risor/pull/348))
+- Exposed Go's `os` package errors for more detailed error handling ([#373](https://github.com/risor-io/risor/pull/373))
+- Added `errors.is` function for error comparison ([#367](https://github.com/risor-io/risor/pull/367))
+- shlex: Shell-like string parsing based on github.com/u-root/u-root/pkg/shlex ([#298](https://github.com/risor-io/risor/pull/298))
+- Adjustments to `os.exit` behavior ([#296](https://github.com/risor-io/risor/pull/296), [#327](https://github.com/risor-io/risor/pull/327))
+
+## Language and Toolchain
+
+In this area, we have some important bug fixes and two improvements that I
+consider significant. The first is the ability to import modules by path, which
+supports more natural module organization. The second is improving compiler
+error messages to make it easier to track down `undefined variable` and similar
+errors.
+
+- Ability to import modules by path ([#337](https://github.com/risor-io/risor/pull/337))
+- File location information in more compiler error messages ([#320](https://github.com/risor-io/risor/pull/320))
+- Added `vm.ErrGlobalNotFound` ([#314](https://github.com/risor-io/risor/pull/314))
+- Added bitwise and operator ([#380](https://github.com/risor-io/risor/pull/380)) 
+- Fixed break statement bug with range loops ([#336](https://github.com/risor-io/risor/pull/336))
+- Fixed compound operations with set item ([#324](https://github.com/risor-io/risor/pull/324)) and other compound operation issues ([#325](https://github.com/risor-io/risor/pull/325))
+- Fixed import handling in REPL and named functions as expressions ([#293](https://github.com/risor-io/risor/pull/293))
+
+## Go Interop
+
+When Risor is used as an embedded library, it has the ability to wrap arbitrary
+Go types as Risor objects, and to proxy function calls on the types. This allows
+Risor to be added into existing applications to provide a scripting interface
+on top of the existing types in the application. Risor's capabilities in this
+area keep improving. In this release, we added support for a couple less common
+situations like wrapping struct _value_ types.
+
+- Adjusted proxy behavior on struct value types ([#371](https://github.com/risor-io/risor/pull/371))
+- Adjusted proxying to nested struct fields ([#315](https://github.com/risor-io/risor/pull/315))
+- Fixed issues with proxying to Go functions that have an `any` typed parameter ([#323](https://github.com/risor-io/risor/pull/323))
+- Added mechanism to reuse a global database connection in SQL module ([#347](https://github.com/risor-io/risor/pull/347))
+- Added `FSImporter` for importing modules from a Go `fs.FS` filesystem ([#366](https://github.com/risor-io/risor/pull/366))
+
+## Dependencies and Build System
+
+To quickly recap my thinking on Risor's approach to dependencies:
+
+- The Risor CLI (the `risor` binary) is meant to be "batteries included". All
+  modules from the core Risor repository are included in the binary that
+  is available for install via Homebrew.
+- When using Risor as a library, the developer is able to choose which Risor
+  modules to use. It should be possible to use a minimal form of Risor that is
+  otherwise dependency-free, or very nearly so.
+- Additional Risor modules can get installed using `go get`.
+
+This release more fully implements that mindset, at the expense of requiring a
+couple minor upgrade steps for some Risor library users, who will need to `go get`
+install a couple more Risor modules.
+
+Specifically, these four modules must be individually `go get` installed:
+
+- `github.com/risor-io/risor/modules/color`
+- `github.com/risor-io/risor/modules/isatty`
+- `github.com/risor-io/risor/modules/tablewriter`
+- `github.com/risor-io/risor/modules/yaml`
+
+Then provide them as globals, if desired, using the `WithGlobals` option:
+
+```go copy
+risor.WithGlobals(map[string]any{
+    "color":   color.Module(),
+    "isatty":  isatty.Module(),
+    "tablewriter": tablewriter.Module(),
+    "yaml":  yaml.Module(),
+})
+```
+
+## Get Started or Upgrade
+
+Thanks for taking a look at Risor. It's _really_ easy to try out. Just run
+`brew install risor` or build from source:
+
+```bash copy
+git clone git@github.com:risor-io/risor.git
+cd risor/cmd/risor
+go install
+```
+
+I'd love to hear your feedback and see what you're building with Risor. Drop into the
+[GitHub discussions](https://github.com/risor-io/risor/discussions) or join the
+`#risor` channel on the [Gophers Slack](https://gophers.slack.com/).
+
+Happy scripting, <br/>
+[@myzie](https://github.com/myzie)
